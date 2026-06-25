@@ -1,0 +1,92 @@
+name: paper_trading_tycoon
+description: A gamified stock market simulator for the Indian market. Trade virtual stocks, earn XP, climb leagues, and unlock career titles — with zero financial risk.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # Navigation
+  go_router: ^13.2.0
+
+  # HTTP Client
+  dio: ^5.4.3+1
+
+  # Local Storage
+  hive_flutter: ^1.1.0
+  hive: ^2.2.3
+
+  # Secure Storage
+  flutter_secure_storage: ^9.0.0
+
+  # Serialization
+  json_annotation: ^4.9.0
+  freezed_annotation: ^2.4.1
+
+  # Utilities
+  logger: ^2.3.0
+  connectivity_plus: ^6.0.3
+  dartz: ^0.10.1
+  equatable: ^2.0.5
+  intl: ^0.19.0
+  uuid: ^4.4.0
+  shared_preferences: ^2.2.3
+
+  # Firebase (push notifications + analytics)
+  firebase_core: ^3.3.0
+  firebase_messaging: ^15.1.0
+  firebase_crashlytics: ^4.0.4
+
+  # UI Utilities
+  cached_network_image: ^3.3.1
+  lottie: ^3.1.2
+  shimmer: ^3.0.0
+
+  # Environment
+  envied: ^0.5.4+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code Generation
+  build_runner: ^2.4.9
+  riverpod_generator: ^2.4.0
+  json_serializable: ^6.8.0
+  freezed: ^2.5.2
+  hive_generator: ^2.0.1
+  envied_generator: ^0.5.4+1
+
+  # Linting
+  flutter_lints: ^4.0.0
+  custom_lint: ^0.6.4
+  riverpod_lint: ^2.3.10
+
+  # Testing
+  mocktail: ^1.0.4
+  fake_async: ^1.3.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo/
+    - assets/images/onboarding/
+    - assets/images/achievements/
+    - assets/images/store/
+    - assets/icons/
+    - assets/animations/
+
+  fonts:
+    # Add custom fonts here when available
+    # - family: CustomFont
+    #   fonts:
+    #     - asset: assets/fonts/CustomFont-Regular.ttf

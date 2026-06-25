@@ -1,0 +1,18 @@
+# Paper Trading Tycoon — PHPStan Static Analysis Configuration
+#
+# Level 8 (strict) enforces production-grade PHP type safety.
+# All new code must pass level 8 before merging.
+
+includes:
+    - vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    level: 8
+    paths:
+        - app
+    ignoreErrors:
+        # Laravel magic methods are handled by Larastan extensions.
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model#'
+    checkMissingIterableValueType: false
+    treatPhpDocTypesAsCertain: false
