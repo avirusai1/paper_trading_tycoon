@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -21,9 +22,9 @@ final class UserAchievement extends Model
     protected function casts(): array
     {
         return [
-            'unlock_count'       => 'integer',
-            'first_unlocked_at'  => 'datetime',
-            'last_unlocked_at'   => 'datetime',
+            'unlock_count' => 'integer',
+            'first_unlocked_at' => 'datetime',
+            'last_unlocked_at' => 'datetime',
         ];
     }
 

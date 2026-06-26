@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Contracts;
 
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\SeasonResult;
+use App\GameEngine\Exceptions\SeasonException;
 use App\Models\Season;
 
 /**
@@ -19,7 +21,7 @@ interface SeasonProcessorContract
      * Ensure the user is enrolled in the currently active season.
      * Idempotent — safe to call on every login.
      *
-     * @throws \App\GameEngine\Exceptions\SeasonException
+     * @throws SeasonException
      */
     public function ensureEnrolled(GameContext $context): SeasonResult;
 
@@ -27,7 +29,7 @@ interface SeasonProcessorContract
      * Distribute end-of-season rewards for a user based on their final
      * league rank within the completed season.
      *
-     * @throws \App\GameEngine\Exceptions\SeasonException
+     * @throws SeasonException
      */
     public function distributeRewards(GameContext $context, Season $season): SeasonResult;
 }

@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,6 +13,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class RewardHistory extends Model
 {
+    use HasFactory;
+
+    protected $table = 'reward_history';
+
     public const UPDATED_AT = null;
 
     protected $fillable = [
@@ -20,7 +26,7 @@ final class RewardHistory extends Model
     protected function casts(): array
     {
         return [
-            'xp_amount'   => 'integer',
+            'xp_amount' => 'integer',
             'coin_amount' => 'integer',
         ];
     }

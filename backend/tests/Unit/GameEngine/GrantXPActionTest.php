@@ -1,12 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\GameEngine;
 
 use App\GameEngine\Actions\GrantXPAction;
-use App\GameEngine\Contracts\GameRuleProviderContract;
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\GameRuleProviderContract;
 use App\GameEngine\DTOs\XPResult;
+use App\GameEngine\Enums\PlayerState;
 use App\GameEngine\Enums\XPSource;
 use App\GameEngine\Support\DailyCapTracker;
 use App\GameEngine\Support\XPMultiplierCalculator;
@@ -36,23 +38,25 @@ final class GrantXPActionTest extends TestCase
     use RefreshDatabase;
 
     private GameRuleProviderContract $rules;
-    private XPMultiplierCalculator   $multiplierCalc;
-    private DailyCapTracker          $capTracker;
-    private GrantXPAction            $action;
+    private XPMultiplierCalculator $multiplierCalc;
+    private DailyCapTracker $capTracker;
+    private GrantXPAction $action;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->rules          = Mockery::mock(GameRuleProviderContract::class);
+        $this->rules = Mockery::mock(GameRuleProviderContract::class);
         $this->multiplierCalc = Mockery::mock(XPMultiplierCalculator::class);
-        $this->capTracker     = Mockery::mock(DailyCapTracker::class);
+        $this->capTracker = Mockery::mock(DailyCapTracker::class);
 
         $this->action = new GrantXPAction(
             $this->rules,
             $this->multiplierCalc,
             $this->capTracker,
         );
+
+        $this->rules->shouldReceive('getInt')->with('xp.daily_cap.trade_buy')->andReturn(1000)->byDefault();
 
         // Seed the minimum level record so calculateLevel() doesn't fail
         Level::factory()->create(['level_number' => 1, 'xp_required' => 0,   'xp_to_next_level' => 100]);
@@ -62,10 +66,10 @@ final class GrantXPActionTest extends TestCase
     /** @test */
     public function it_grants_xp_and_writes_log(): void
     {
-        $user      = User::factory()->create();
-        $wallet    = Wallet::factory()->create(['user_id' => $user->id]);
+        $user = User::factory()->create();
+        $wallet = Wallet::factory()->create(['user_id' => $user->id]);
         $userLevel = UserLevel::factory()->create(['user_id' => $user->id, 'current_xp' => 0, 'current_level' => 1]);
-        $context   = $this->buildContext($user, $wallet, $userLevel);
+        $context = $this->buildContext($user, $wallet, $userLevel);
 
         $this->rules->shouldReceive('getInt')->with('xp.trade_buy', 0)->andReturn(10);
         $this->multiplierCalc->shouldReceive('calculate')->andReturn(1.0);
@@ -77,13 +81,13 @@ final class GrantXPActionTest extends TestCase
 
         $this->assertInstanceOf(XPResult::class, $result);
         $this->assertSame(10, $result->amountGranted);
-        $this->assertSame(0,  $result->xpBefore);
+        $this->assertSame(0, $result->xpBefore);
         $this->assertSame(10, $result->xpAfter);
         $this->assertFalse($result->didLevelUp);
         $this->assertDatabaseHas('xp_logs', [
-            'user_id'   => $user->id,
-            'amount'    => 10,
-            'source'    => 'trade_buy',
+            'user_id' => $user->id,
+            'amount' => 10,
+            'source' => 'trade_buy',
             'source_id' => 'trade_001',
         ]);
     }
@@ -91,10 +95,10 @@ final class GrantXPActionTest extends TestCase
     /** @test */
     public function it_applies_multiplier(): void
     {
-        $user      = User::factory()->create();
-        $wallet    = Wallet::factory()->create(['user_id' => $user->id]);
+        $user = User::factory()->create();
+        $wallet = Wallet::factory()->create(['user_id' => $user->id]);
         $userLevel = UserLevel::factory()->create(['user_id' => $user->id, 'current_xp' => 0, 'current_level' => 1]);
-        $context   = $this->buildContext($user, $wallet, $userLevel);
+        $context = $this->buildContext($user, $wallet, $userLevel);
 
         $this->rules->shouldReceive('getInt')->with('xp.trade_buy', 0)->andReturn(10);
         $this->multiplierCalc->shouldReceive('calculate')->andReturn(2.0);
@@ -109,10 +113,10 @@ final class GrantXPActionTest extends TestCase
     /** @test */
     public function it_detects_level_up(): void
     {
-        $user      = User::factory()->create();
-        $wallet    = Wallet::factory()->create(['user_id' => $user->id]);
+        $user = User::factory()->create();
+        $wallet = Wallet::factory()->create(['user_id' => $user->id]);
         $userLevel = UserLevel::factory()->create(['user_id' => $user->id, 'current_xp' => 95, 'current_level' => 1]);
-        $context   = $this->buildContext($user, $wallet, $userLevel);
+        $context = $this->buildContext($user, $wallet, $userLevel);
 
         $this->rules->shouldReceive('getInt')->with('xp.trade_buy', 0)->andReturn(10);
         $this->multiplierCalc->shouldReceive('calculate')->andReturn(1.0);
@@ -129,10 +133,10 @@ final class GrantXPActionTest extends TestCase
     /** @test */
     public function it_returns_zero_when_daily_cap_exhausted(): void
     {
-        $user      = User::factory()->create();
-        $wallet    = Wallet::factory()->create(['user_id' => $user->id]);
+        $user = User::factory()->create();
+        $wallet = Wallet::factory()->create(['user_id' => $user->id]);
         $userLevel = UserLevel::factory()->create(['user_id' => $user->id, 'current_xp' => 0, 'current_level' => 1]);
-        $context   = $this->buildContext($user, $wallet, $userLevel);
+        $context = $this->buildContext($user, $wallet, $userLevel);
 
         $this->rules->shouldReceive('getInt')->with('xp.trade_buy', 0)->andReturn(10);
         $this->rules->shouldReceive('getInt')->with('xp.daily_cap.trade_buy')->andReturn(100);
@@ -149,10 +153,10 @@ final class GrantXPActionTest extends TestCase
     /** @test */
     public function it_is_idempotent_on_duplicate_source_id(): void
     {
-        $user      = User::factory()->create();
-        $wallet    = Wallet::factory()->create(['user_id' => $user->id]);
+        $user = User::factory()->create();
+        $wallet = Wallet::factory()->create(['user_id' => $user->id]);
         $userLevel = UserLevel::factory()->create(['user_id' => $user->id, 'current_xp' => 0, 'current_level' => 1]);
-        $context   = $this->buildContext($user, $wallet, $userLevel);
+        $context = $this->buildContext($user, $wallet, $userLevel);
 
         $this->rules->shouldReceive('getInt')->with('xp.trade_buy', 0)->andReturn(10);
         $this->multiplierCalc->shouldReceive('calculate')->andReturn(1.0);
@@ -174,19 +178,19 @@ final class GrantXPActionTest extends TestCase
     private function buildContext(User $user, Wallet $wallet, UserLevel $userLevel): GameContext
     {
         return new GameContext(
-            user:                   $user,
-            playerState:            \App\GameEngine\Enums\PlayerState::Active,
-            wallet:                 $wallet,
-            userLevel:              $userLevel,
-            currentLeague:          null,
-            league:                 null,
-            activeSeason:           null,
-            activeMissions:         [],
+            user: $user,
+            playerState: PlayerState::Active,
+            wallet: $wallet,
+            userLevel: $userLevel,
+            currentLeague: null,
+            league: null,
+            activeSeason: null,
+            activeMissions: [],
             unlockedAchievementIds: [],
-            loginStreakDays:        0,
-            activeMultipliers:      ['xp' => 1.0, 'coins' => 1.0],
-            featureFlags:           [],
-            builtAt:                microtime(true),
+            loginStreakDays: 0,
+            activeMultipliers: ['xp' => 1.0, 'coins' => 1.0],
+            featureFlags: [],
+            builtAt: microtime(true),
         );
     }
 }

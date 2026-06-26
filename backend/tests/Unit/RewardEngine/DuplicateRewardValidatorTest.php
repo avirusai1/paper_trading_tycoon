@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\RewardEngine;
 
 use App\Models\RewardHistory;
+use App\Models\User;
 use App\RewardEngine\Contexts\RewardContext;
 use App\RewardEngine\DTOs\RewardRequest;
 use App\RewardEngine\Enums\RewardSource;
 use App\RewardEngine\Enums\RewardType;
-use App\RewardEngine\Enums\ValidationFailureReason;
 use App\RewardEngine\Exceptions\RewardValidationException;
 use App\RewardEngine\Validators\DuplicateRewardValidator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,9 +26,9 @@ class DuplicateRewardValidatorTest extends TestCase
     /** @test */
     public function it_passes_when_no_history_record_exists(): void
     {
-        $request   = $this->makeRequest();
-        $context   = \Mockery::mock(RewardContext::class);
-        $validator = new DuplicateRewardValidator();
+        $request = $this->makeRequest();
+        $context = \Mockery::mock(RewardContext::class);
+        $validator = new DuplicateRewardValidator;
 
         // No history record — should not throw
         $validator->validate($request, $context);
@@ -40,16 +41,17 @@ class DuplicateRewardValidatorTest extends TestCase
     {
         $this->expectException(RewardValidationException::class);
 
-        $request = $this->makeRequest();
+        $user = User::factory()->create();
+        $request = RewardRequest::make($user->id, RewardType::Coins, RewardSource::Mission, '42');
 
         RewardHistory::factory()->create([
-            'user_id'     => $request->userId,
+            'user_id' => $request->userId,
             'source_type' => $request->rewardType->value,
-            'source_id'   => $request->idempotencyKey,
+            'source_id' => $request->idempotencyKey,
         ]);
 
-        $context   = \Mockery::mock(RewardContext::class);
-        $validator = new DuplicateRewardValidator();
+        $context = \Mockery::mock(RewardContext::class);
+        $validator = new DuplicateRewardValidator;
 
         $validator->validate($request, $context);
     }
@@ -57,22 +59,23 @@ class DuplicateRewardValidatorTest extends TestCase
     /** @test */
     public function admin_source_bypasses_duplicate_check(): void
     {
+        $user = User::factory()->create();
         $request = RewardRequest::make(
-            userId:     1,
+            userId: $user->id,
             rewardType: RewardType::AdminReward,
-            source:     RewardSource::Admin,
-            sourceId:   'admin_grant_1',
+            source: RewardSource::Admin,
+            sourceId: 'admin_grant_1',
         );
 
         // Even with a history record, admin bypasses
         RewardHistory::factory()->create([
-            'user_id'     => $request->userId,
+            'user_id' => $request->userId,
             'source_type' => $request->rewardType->value,
-            'source_id'   => $request->idempotencyKey,
+            'source_id' => $request->idempotencyKey,
         ]);
 
-        $context   = \Mockery::mock(RewardContext::class);
-        $validator = new DuplicateRewardValidator();
+        $context = \Mockery::mock(RewardContext::class);
+        $validator = new DuplicateRewardValidator;
 
         $validator->validate($request, $context); // Should not throw
 
@@ -84,10 +87,10 @@ class DuplicateRewardValidatorTest extends TestCase
     private function makeRequest(): RewardRequest
     {
         return RewardRequest::make(
-            userId:     1,
+            userId: 1,
             rewardType: RewardType::Coins,
-            source:     RewardSource::Mission,
-            sourceId:   '42',
+            source: RewardSource::Mission,
+            sourceId: '42',
         );
     }
 }

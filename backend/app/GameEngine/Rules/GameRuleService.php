@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Rules;
@@ -31,7 +32,7 @@ final class GameRuleService implements GameRuleProviderContract
 {
     private const CACHE_PREFIX = 'game_rule';
     private const GROUP_PREFIX = 'game_rules_group';
-    private const CACHE_TAG    = 'game_rules';
+    private const CACHE_TAG = 'game_rules';
 
     private int $cacheTtlSeconds;
 
@@ -60,6 +61,7 @@ final class GameRuleService implements GameRuleProviderContract
     public function getBool(string $key, ?bool $default = null): bool
     {
         $value = $this->resolve($key, $default);
+
         return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? (bool) $value;
     }
 
@@ -68,13 +70,13 @@ final class GameRuleService implements GameRuleProviderContract
      */
     public function getGroup(string $group): array
     {
-        return $this->cached(self::GROUP_PREFIX . ':' . $group, function () use ($group): array {
+        return $this->cached(self::GROUP_PREFIX.':'.$group, function () use ($group): array {
             $rules = GameRule::where('group', $group)->get();
-            $map   = [];
+            $map = [];
 
             foreach ($rules as $rule) {
                 // Strip the "group." prefix from the key for the returned map
-                $shortKey       = ltrim(str_replace($group . '.', '', $rule->key), '.');
+                $shortKey = ltrim(str_replace($group.'.', '', $rule->key), '.');
                 $map[$shortKey] = $rule->typedValue();
             }
 
@@ -101,13 +103,14 @@ final class GameRuleService implements GameRuleProviderContract
      */
     private function resolve(string $key, mixed $default): mixed
     {
-        return $this->cached(self::CACHE_PREFIX . ':' . $key, function () use ($key, $default): mixed {
+        return $this->cached(self::CACHE_PREFIX.':'.$key, function () use ($key, $default): mixed {
             $rule = GameRule::where('key', $key)->first();
 
             if ($rule === null) {
                 if ($default !== null) {
                     return $default;
                 }
+
                 throw GameRuleNotFoundException::forKey($key);
             }
 

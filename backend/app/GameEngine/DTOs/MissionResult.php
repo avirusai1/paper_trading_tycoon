@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\DTOs;
@@ -9,19 +10,19 @@ namespace App\GameEngine\DTOs;
 final readonly class MissionResult
 {
     public function __construct(
-        public readonly int    $userMissionId,
-        public readonly int    $missionId,
-        public readonly int    $userId,
+        public readonly int $userMissionId,
+        public readonly int $missionId,
+        public readonly int $userId,
         public readonly string $missionKey,
-        public readonly int    $progressBefore,
-        public readonly int    $progressAfter,
-        public readonly int    $target,
+        public readonly int $progressBefore,
+        public readonly int $progressAfter,
+        public readonly int $target,
         /** True if progressAfter >= target AND the mission was not already complete before. */
-        public readonly bool   $justCompleted,
+        public readonly bool $justCompleted,
         /** True if the reward for a completed mission was also claimed in this operation. */
-        public readonly bool   $rewardClaimed,
-        public readonly int    $xpReward,
-        public readonly int    $coinReward,
+        public readonly bool $rewardClaimed,
+        public readonly int $xpReward,
+        public readonly int $coinReward,
     ) {}
 
     public function progressPercent(): float

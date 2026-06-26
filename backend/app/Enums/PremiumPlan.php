@@ -11,16 +11,16 @@ namespace App\Enums;
 enum PremiumPlan: string
 {
     case Monthly = 'monthly';
-    case Annual  = 'annual';
+    case Annual = 'annual';
 
     /**
      * Duration in days for this plan.
      */
     public function durationDays(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Monthly => 30,
-            self::Annual  => 365,
+            self::Annual => 365,
         };
     }
 }

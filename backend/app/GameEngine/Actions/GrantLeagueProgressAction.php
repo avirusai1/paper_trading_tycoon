@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Actions;
 
+use App\Enums\LeagueTier;
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\LeagueResult;
 use App\GameEngine\Exceptions\LeagueException;
-use App\Enums\LeagueTier;
 use App\Models\League;
 use App\Models\Season;
 use App\Models\UserLeague;
@@ -33,23 +34,23 @@ final class GrantLeagueProgressAction
         $userLeague = $context->currentLeague;
 
         // Compute return percent from starting virtual cash
-        $startingCash   = $context->wallet->total_deposited_paise;
-        $returnPercent  = $startingCash > 0
+        $startingCash = $context->wallet->total_deposited_paise;
+        $returnPercent = $startingCash > 0
             ? round(($portfolioValuePaise - $startingCash) / $startingCash * 100, 2)
             : 0.0;
 
         $userLeague->update([
             'season_portfolio_value_paise' => $portfolioValuePaise,
-            'season_return_percent'        => $returnPercent,
+            'season_return_percent' => $returnPercent,
         ]);
 
         return new LeagueResult(
-            userId:              $context->userId(),
-            seasonId:            $context->activeSeason->id,
-            tier:                LeagueTier::from($userLeague->tier),
-            rankPosition:        $userLeague->rank_position,
+            userId: $context->userId(),
+            seasonId: $context->activeSeason->id,
+            tier: LeagueTier::from($userLeague->tier),
+            rankPosition: $userLeague->rank_position,
             portfolioValuePaise: $portfolioValuePaise,
-            returnPercent:       $returnPercent,
+            returnPercent: $returnPercent,
         );
     }
 
@@ -69,35 +70,35 @@ final class GrantLeagueProgressAction
             throw LeagueException::noLeagueForUser($context->userId(), $seasonId);
         }
 
-        $league        = League::where('tier', $userLeague->tier)->firstOrFail();
-        $totalInTier   = UserLeague::where('season_id', $seasonId)->where('tier', $userLeague->tier)->count();
-        $rank          = $userLeague->rank_position;
+        $league = League::where('tier', $userLeague->tier)->firstOrFail();
+        $totalInTier = UserLeague::where('season_id', $seasonId)->where('tier', $userLeague->tier)->count();
+        $rank = $userLeague->rank_position;
 
         $promoteThreshold = (int) ceil($totalInTier * ($league->promote_top_percent / 100));
-        $demoteThreshold  = (int) floor($totalInTier * (1 - $league->demote_bottom_percent / 100));
+        $demoteThreshold = (int) floor($totalInTier * (1 - $league->demote_bottom_percent / 100));
 
         $currentTier = LeagueTier::from($userLeague->tier);
         $seasonResult = 'stayed';
-        $newTier      = $currentTier;
+        $newTier = $currentTier;
 
         if ($rank <= $promoteThreshold && $currentTier->next() !== null) {
             $seasonResult = 'promoted';
-            $newTier      = $currentTier->next();
+            $newTier = $currentTier->next();
         } elseif ($rank > $demoteThreshold && $currentTier->previous() !== null) {
             $seasonResult = 'demoted';
-            $newTier      = $currentTier->previous();
+            $newTier = $currentTier->previous();
         }
 
         $userLeague->update(['season_result' => $seasonResult]);
 
         return new LeagueResult(
-            userId:              $context->userId(),
-            seasonId:            $seasonId,
-            tier:                $newTier,
-            rankPosition:        $rank,
+            userId: $context->userId(),
+            seasonId: $seasonId,
+            tier: $newTier,
+            rankPosition: $rank,
             portfolioValuePaise: $userLeague->season_portfolio_value_paise,
-            returnPercent:       $userLeague->season_return_percent,
-            seasonResult:        $seasonResult,
+            returnPercent: $userLeague->season_return_percent,
+            seasonResult: $seasonResult,
         );
     }
 
@@ -123,13 +124,13 @@ final class GrantLeagueProgressAction
             UserLeague::firstOrCreate(
                 ['user_id' => $context->userId(), 'season_id' => $seasonId],
                 [
-                    'league_id'                    => $bronzeLeague->id,
-                    'tier'                         => $bronzeLeague->tier->value,
-                    'rank_position'                => 0,
+                    'league_id' => $bronzeLeague->id,
+                    'tier' => $bronzeLeague->tier->value,
+                    'rank_position' => 0,
                     'season_portfolio_value_paise' => $context->wallet->virtual_cash_paise,
-                    'season_return_percent'        => 0.0,
-                    'season_result'                => null,
-                    'rewards_claimed'              => false,
+                    'season_return_percent' => 0.0,
+                    'season_result' => null,
+                    'rewards_claimed' => false,
                 ],
             );
         });

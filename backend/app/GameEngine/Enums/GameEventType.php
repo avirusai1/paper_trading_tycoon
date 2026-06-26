@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Enums;
@@ -11,15 +12,15 @@ namespace App\GameEngine\Enums;
  */
 enum GameEventType: string
 {
-    case TradeExecuted        = 'trade_executed';
-    case DailyLoginCompleted  = 'daily_login_completed';
-    case MissionCompleted     = 'mission_completed';
-    case AchievementUnlocked  = 'achievement_unlocked';
-    case ReferralCompleted    = 'referral_completed';
-    case SeasonEnded          = 'season_ended';
-    case PortfolioSnapshot    = 'portfolio_snapshot';
-    case UserRegistered       = 'user_registered';
-    case LevelUp              = 'level_up';
+    case TradeExecuted = 'trade_executed';
+    case DailyLoginCompleted = 'daily_login_completed';
+    case MissionCompleted = 'mission_completed';
+    case AchievementUnlocked = 'achievement_unlocked';
+    case ReferralCompleted = 'referral_completed';
+    case SeasonEnded = 'season_ended';
+    case PortfolioSnapshot = 'portfolio_snapshot';
+    case UserRegistered = 'user_registered';
+    case LevelUp = 'level_up';
 
     /**
      * Returns true if this event type should trigger XP processing.
@@ -32,8 +33,8 @@ enum GameEventType: string
             self::MissionCompleted,
             self::AchievementUnlocked,
             self::ReferralCompleted,
-            self::SeasonEnded   => true,
-            default             => false,
+            self::SeasonEnded => true,
+            default => false,
         };
     }
 
@@ -46,7 +47,7 @@ enum GameEventType: string
             self::TradeExecuted,
             self::DailyLoginCompleted,
             self::ReferralCompleted => true,
-            default                 => false,
+            default => false,
         };
     }
 
@@ -59,8 +60,8 @@ enum GameEventType: string
             self::TradeExecuted,
             self::DailyLoginCompleted,
             self::MissionCompleted,
-            self::LevelUp            => true,
-            default                  => false,
+            self::LevelUp => true,
+            default => false,
         };
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Strategies;
@@ -36,14 +37,14 @@ final class InventoryRewardStrategy implements RewardStrategyContract
     {
         // No coin/XP calculation needed — just pass through the request
         return new CalculatedReward(
-            rewardType:     RewardType::InventoryItem,
+            rewardType: RewardType::InventoryItem,
             idempotencyKey: $request->idempotencyKey,
-            userId:         $request->userId,
-            extras:         [
+            userId: $request->userId,
+            extras: [
                 'store_item_id' => (int) $request->meta('store_item_id', 0),
-                'expires_at'    => $request->meta('expires_at'),
+                'expires_at' => $request->meta('expires_at'),
             ],
-            isDryRun:       $request->dryRun,
+            isDryRun: $request->dryRun,
         );
     }
 
@@ -51,10 +52,10 @@ final class InventoryRewardStrategy implements RewardStrategyContract
     {
         if ($reward->isDryRun) {
             return new StrategyResult(
-                rewardType:     $this->handles(),
-                status:         RewardStatus::Validated,
+                rewardType: $this->handles(),
+                status: RewardStatus::Validated,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
+                userId: $reward->userId,
             );
         }
 
@@ -80,38 +81,38 @@ final class InventoryRewardStrategy implements RewardStrategyContract
 
         if ($existing !== null) {
             return new StrategyResult(
-                rewardType:     $this->handles(),
-                status:         RewardStatus::Skipped,
+                rewardType: $this->handles(),
+                status: RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
-                wasIdempotent:  true,
+                userId: $reward->userId,
+                wasIdempotent: true,
             );
         }
 
         /** @var UserInventory $inventory */
         $inventory = UserInventory::create([
-            'user_id'       => $reward->userId,
+            'user_id' => $reward->userId,
             'store_item_id' => $storeItemId,
-            'quantity'      => 1,
-            'is_equipped'   => false,
-            'metadata'      => ['reward_key' => $reward->idempotencyKey],
-            'expires_at'    => $reward->extras['expires_at'] ?? null,
-            'purchased_at'  => now(),
+            'quantity' => 1,
+            'is_equipped' => false,
+            'metadata' => ['reward_key' => $reward->idempotencyKey],
+            'expires_at' => $reward->extras['expires_at'] ?? null,
+            'purchased_at' => now(),
         ]);
 
         Log::info('[RewardEngine:InventoryStrategy] Item granted', [
-            'user_id'       => $reward->userId,
+            'user_id' => $reward->userId,
             'store_item_id' => $storeItemId,
-            'inventory_id'  => $inventory->id,
-            'key'           => $reward->idempotencyKey,
+            'inventory_id' => $inventory->id,
+            'key' => $reward->idempotencyKey,
         ]);
 
         return new StrategyResult(
-            rewardType:     $this->handles(),
-            status:         RewardStatus::Distributed,
+            rewardType: $this->handles(),
+            status: RewardStatus::Distributed,
             idempotencyKey: $reward->idempotencyKey,
-            userId:         $reward->userId,
-            extras:         ['inventory_id' => $inventory->id, 'store_item_id' => $storeItemId],
+            userId: $reward->userId,
+            extras: ['inventory_id' => $inventory->id, 'store_item_id' => $storeItemId],
         );
     }
 
@@ -124,7 +125,7 @@ final class InventoryRewardStrategy implements RewardStrategyContract
             ->delete();
 
         Log::info('[RewardEngine:InventoryStrategy] Inventory reward rolled back', [
-            'user_id'         => $context->userId(),
+            'user_id' => $context->userId(),
             'idempotency_key' => $idempotencyKey,
         ]);
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Events;
@@ -14,13 +15,24 @@ final readonly class ReferralCompletedEvent implements GameEvent
     public function __construct(
         /** The referrer (user who shared the code). */
         private readonly int $userId,
-        public readonly int  $referralId,
-        public readonly int  $referredUserId,
+        public readonly int $referralId,
+        public readonly int $referredUserId,
     ) {}
 
-    public function eventType(): GameEventType { return GameEventType::ReferralCompleted; }
-    public function userId(): int              { return $this->userId; }
-    public function sourceId(): string         { return (string) $this->referralId; }
+    public function eventType(): GameEventType
+    {
+        return GameEventType::ReferralCompleted;
+    }
+
+    public function userId(): int
+    {
+        return $this->userId;
+    }
+
+    public function sourceId(): string
+    {
+        return (string) $this->referralId;
+    }
 
     public function idempotencyKey(): string
     {

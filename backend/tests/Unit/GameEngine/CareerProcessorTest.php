@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\GameEngine;
@@ -34,7 +35,7 @@ final class CareerProcessorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->processor = new CareerProcessor(new GrantCareerProgressAction());
+        $this->processor = new CareerProcessor(new GrantCareerProgressAction);
 
         // Seed career titles matching config/gamification.php
         CareerTitle::factory()->create(['min_level' => 1,  'max_level' => 5,  'title' => 'Student Trader']);
@@ -63,25 +64,25 @@ final class CareerProcessorTest extends TestCase
 
         $this->assertTrue($result->titleChanged);
         $this->assertSame('Student Trader', $result->titleBefore);
-        $this->assertSame('Intern Trader',  $result->titleAfter);
+        $this->assertSame('Intern Trader', $result->titleAfter);
     }
 
     /** @test */
     public function it_persists_title_change_to_database(): void
     {
-        $user      = User::factory()->create();
-        $wallet    = Wallet::factory()->create(['user_id' => $user->id]);
+        $user = User::factory()->create();
+        $wallet = Wallet::factory()->create(['user_id' => $user->id]);
         $userLevel = UserLevel::factory()->create([
-            'user_id'       => $user->id,
+            'user_id' => $user->id,
             'current_level' => 11,
-            'career_title'  => 'Intern Trader',
+            'career_title' => 'Intern Trader',
         ]);
         $context = $this->makeContextFromModels($user, $wallet, $userLevel);
 
         $this->processor->evaluate($context);
 
         $this->assertDatabaseHas('user_levels', [
-            'user_id'      => $user->id,
+            'user_id' => $user->id,
             'career_title' => 'Junior Trader',
         ]);
     }
@@ -100,32 +101,33 @@ final class CareerProcessorTest extends TestCase
 
     private function makeContext(int $level, string $title): GameContext
     {
-        $user      = User::factory()->create();
-        $wallet    = Wallet::factory()->create(['user_id' => $user->id]);
+        $user = User::factory()->create();
+        $wallet = Wallet::factory()->create(['user_id' => $user->id]);
         $userLevel = UserLevel::factory()->create([
-            'user_id'       => $user->id,
+            'user_id' => $user->id,
             'current_level' => $level,
-            'career_title'  => $title,
+            'career_title' => $title,
         ]);
+
         return $this->makeContextFromModels($user, $wallet, $userLevel);
     }
 
     private function makeContextFromModels(User $user, Wallet $wallet, UserLevel $userLevel): GameContext
     {
         return new GameContext(
-            user:                   $user,
-            playerState:            PlayerState::Active,
-            wallet:                 $wallet,
-            userLevel:              $userLevel,
-            currentLeague:          null,
-            league:                 null,
-            activeSeason:           null,
-            activeMissions:         [],
+            user: $user,
+            playerState: PlayerState::Active,
+            wallet: $wallet,
+            userLevel: $userLevel,
+            currentLeague: null,
+            league: null,
+            activeSeason: null,
+            activeMissions: [],
             unlockedAchievementIds: [],
-            loginStreakDays:        0,
-            activeMultipliers:      ['xp' => 1.0, 'coins' => 1.0],
-            featureFlags:           [],
-            builtAt:                microtime(true),
+            loginStreakDays: 0,
+            activeMultipliers: ['xp' => 1.0, 'coins' => 1.0],
+            featureFlags: [],
+            builtAt: microtime(true),
         );
     }
 }

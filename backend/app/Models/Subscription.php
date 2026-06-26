@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -21,10 +23,10 @@ final class Subscription extends Model
     {
         return [
             'amount_paid_paise' => 'integer',
-            'starts_at'         => 'datetime',
-            'ends_at'           => 'datetime',
-            'trial_ends_at'     => 'datetime',
-            'cancelled_at'      => 'datetime',
+            'starts_at' => 'datetime',
+            'ends_at' => 'datetime',
+            'trial_ends_at' => 'datetime',
+            'cancelled_at' => 'datetime',
         ];
     }
 
@@ -43,7 +45,7 @@ final class Subscription extends Model
         return $this->status === 'active' && $this->ends_at->isFuture();
     }
 
-    public function scopeActive(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active')->where('ends_at', '>', now());
     }

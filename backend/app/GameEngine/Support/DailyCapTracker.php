@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Support;
@@ -14,10 +15,10 @@ use Illuminate\Support\Facades\Cache;
  * Uses a write-through cache to avoid an aggregation query on every event.
  * Cache TTL is set to end-of-day IST (Asia/Kolkata) so caps reset at midnight.
  */
-final class DailyCapTracker
+class DailyCapTracker
 {
     private const CACHE_PREFIX = 'xp_daily';
-    private const TIMEZONE     = 'Asia/Kolkata';
+    private const TIMEZONE = 'Asia/Kolkata';
 
     /**
      * Return how many XP the user has already received from the given source today.
@@ -54,13 +55,15 @@ final class DailyCapTracker
     private function cacheKey(int $userId, XPSource $source): string
     {
         $date = Carbon::now(self::TIMEZONE)->toDateString();
+
         return sprintf('%s:%d:%s:%s', self::CACHE_PREFIX, $userId, $source->value, $date);
     }
 
     private function secondsUntilMidnight(): int
     {
-        $now      = Carbon::now(self::TIMEZONE);
+        $now = Carbon::now(self::TIMEZONE);
         $midnight = $now->copy()->endOfDay();
+
         return max(60, (int) $now->diffInSeconds($midnight));
     }
 }

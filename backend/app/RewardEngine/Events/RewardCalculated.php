@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Events;
@@ -13,7 +14,7 @@ use App\RewardEngine\DTOs\CalculatedReward;
 final class RewardCalculated extends RewardEngineEvent
 {
     public function __construct(
-        public readonly int             $userId,
+        public readonly int $userId,
         public readonly CalculatedReward $calculatedReward,
     ) {
         parent::__construct();

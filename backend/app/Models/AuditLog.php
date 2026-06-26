@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -21,8 +22,8 @@ final class AuditLog extends Model
     protected function casts(): array
     {
         return [
-            'old_values'   => 'array',
-            'new_values'   => 'array',
+            'old_values' => 'array',
+            'new_values' => 'array',
             'auditable_id' => 'integer',
         ];
     }

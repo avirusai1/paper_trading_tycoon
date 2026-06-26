@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -20,11 +21,11 @@ final class Leaderboard extends Model
     protected function casts(): array
     {
         return [
-            'is_active'        => 'boolean',
-            'max_entries'      => 'integer',
+            'is_active' => 'boolean',
+            'max_entries' => 'integer',
             'period_starts_at' => 'date',
-            'period_ends_at'   => 'date',
-            'last_updated_at'  => 'datetime',
+            'period_ends_at' => 'date',
+            'last_updated_at' => 'datetime',
         ];
     }
 

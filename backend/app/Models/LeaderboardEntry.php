@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -22,9 +23,9 @@ final class LeaderboardEntry extends Model
     {
         return [
             'rank_position' => 'integer',
-            'score_value'   => 'integer',
+            'score_value' => 'integer',
             'score_display' => 'float',
-            'computed_at'   => 'datetime',
+            'computed_at' => 'datetime',
         ];
     }
 

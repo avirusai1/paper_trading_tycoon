@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -21,16 +22,16 @@ final class StockPrice extends Model
     protected function casts(): array
     {
         return [
-            'ltp_paise'      => 'integer',
-            'open_paise'     => 'integer',
-            'high_paise'     => 'integer',
-            'low_paise'      => 'integer',
-            'close_paise'    => 'integer',
-            'change_paise'   => 'integer',
+            'ltp_paise' => 'integer',
+            'open_paise' => 'integer',
+            'high_paise' => 'integer',
+            'low_paise' => 'integer',
+            'close_paise' => 'integer',
+            'change_paise' => 'integer',
             'change_percent' => 'float',
-            'volume'         => 'integer',
-            'market_status'  => MarketStatus::class,
-            'quoted_at'      => 'datetime',
+            'volume' => 'integer',
+            'market_status' => MarketStatus::class,
+            'quoted_at' => 'datetime',
         ];
     }
 

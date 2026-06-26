@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -21,9 +22,9 @@ final class OrderEvent extends Model
     protected function casts(): array
     {
         return [
-            'quantity'    => 'integer',
+            'quantity' => 'integer',
             'price_paise' => 'integer',
-            'metadata'    => 'array',
+            'metadata' => 'array',
             'occurred_at' => 'datetime',
         ];
     }

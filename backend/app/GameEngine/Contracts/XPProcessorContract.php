@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Contracts;
@@ -6,6 +7,7 @@ namespace App\GameEngine\Contracts;
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\XPResult;
 use App\GameEngine\Enums\XPSource;
+use App\GameEngine\Exceptions\XPException;
 
 /**
  * Contract for the XP processing subsystem.
@@ -25,7 +27,8 @@ interface XPProcessorContract
      * Award XP to the user identified in the GameContext.
      *
      * @param  string  $sourceId  Idempotency key — unique per event (e.g. trade ID, challenge ID).
-     * @throws \App\GameEngine\Exceptions\XPException
+     *
+     * @throws XPException
      */
     public function grant(
         GameContext $context,

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Distributors;
@@ -11,6 +12,7 @@ use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\DistributionResult;
 use App\RewardEngine\Enums\RewardSource;
 use App\RewardEngine\Enums\RewardStatus;
+use App\RewardEngine\Enums\RewardType;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Log;
 
@@ -31,12 +33,12 @@ final class CoinDistributor implements RewardDistributorContract
     {
         if ($reward->finalCoins === 0 || $reward->isDryRun) {
             return new DistributionResult(
-                rewardType:     $reward->rewardType,
-                status:         RewardStatus::Skipped,
+                rewardType: $reward->rewardType,
+                status: RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
-                coinsBefore:    $context->coinBalance(),
-                coinsAfter:     $context->coinBalance(),
+                userId: $reward->userId,
+                coinsBefore: $context->coinBalance(),
+                coinsAfter: $context->coinBalance(),
             );
         }
 
@@ -46,29 +48,29 @@ final class CoinDistributor implements RewardDistributorContract
 
         try {
             $balanceAfter = $this->coinLedger->credit(
-                userId:      $reward->userId,
-                amount:      $reward->finalCoins,
-                source:      $this->mapSource($sourceValue),
-                sourceId:    $reward->idempotencyKey,
+                userId: $reward->userId,
+                amount: $reward->finalCoins,
+                source: $this->mapSource($sourceValue),
+                sourceId: $reward->idempotencyKey,
                 description: "Reward: {$reward->rewardType->value}",
             );
         } catch (UniqueConstraintViolationException) {
             Log::info('[RewardEngine:CoinDistributor] Duplicate coin credit — skipping', [
                 'user_id' => $reward->userId,
-                'key'     => $reward->idempotencyKey,
+                'key' => $reward->idempotencyKey,
             ]);
 
             return DistributionResult::skipped($reward->rewardType, $reward->idempotencyKey, $reward->userId);
         }
 
         return new DistributionResult(
-            rewardType:   $reward->rewardType,
-            status:       RewardStatus::Distributed,
+            rewardType: $reward->rewardType,
+            status: RewardStatus::Distributed,
             idempotencyKey: $reward->idempotencyKey,
-            userId:       $reward->userId,
+            userId: $reward->userId,
             coinsGranted: $reward->finalCoins,
-            coinsBefore:  $balanceBefore,
-            coinsAfter:   $balanceAfter,
+            coinsBefore: $balanceBefore,
+            coinsAfter: $balanceAfter,
         );
     }
 
@@ -78,15 +80,15 @@ final class CoinDistributor implements RewardDistributorContract
         // For now, issue a zero-debit to record the intent and log the event.
         // TODO: Query coin_transactions by source_id=idempotencyKey, get amount.
         Log::warning('[RewardEngine:CoinDistributor] Coin rollback — compensating debit placeholder', [
-            'user_id'         => $context->userId(),
+            'user_id' => $context->userId(),
             'idempotency_key' => $idempotencyKey,
         ]);
 
         return new DistributionResult(
-            rewardType:     \App\RewardEngine\Enums\RewardType::Coins,
-            status:         RewardStatus::RolledBack,
+            rewardType: RewardType::Coins,
+            status: RewardStatus::RolledBack,
             idempotencyKey: $idempotencyKey,
-            userId:         $context->userId(),
+            userId: $context->userId(),
         );
     }
 
@@ -96,12 +98,12 @@ final class CoinDistributor implements RewardDistributorContract
     {
         return match ($sourceValue) {
             RewardSource::Achievement->value => CoinTransactionSource::Achievement,
-            RewardSource::Mission->value     => CoinTransactionSource::Challenge,
-            RewardSource::LevelUp->value     => CoinTransactionSource::LevelUp,
-            RewardSource::Referral->value    => CoinTransactionSource::Referral,
-            RewardSource::DailyLogin->value  => CoinTransactionSource::DailyLogin,
-            RewardSource::Season->value      => CoinTransactionSource::SeasonReward,
-            default                          => CoinTransactionSource::AdminGrant,
+            RewardSource::Mission->value => CoinTransactionSource::Challenge,
+            RewardSource::LevelUp->value => CoinTransactionSource::LevelUp,
+            RewardSource::Referral->value => CoinTransactionSource::Referral,
+            RewardSource::DailyLogin->value => CoinTransactionSource::DailyLogin,
+            RewardSource::Season->value => CoinTransactionSource::SeasonReward,
+            default => CoinTransactionSource::AdminGrant,
         };
     }
 }

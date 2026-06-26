@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Strategies;
@@ -27,7 +28,7 @@ use Illuminate\Support\Facades\Log;
 final class CoinRewardStrategy implements RewardStrategyContract
 {
     public function __construct(
-        private readonly CoinCalculator     $calculator,
+        private readonly CoinCalculator $calculator,
         private readonly CoinLedgerContract $coinLedger,
     ) {}
 
@@ -45,11 +46,11 @@ final class CoinRewardStrategy implements RewardStrategyContract
     {
         if ($reward->isDryRun || $reward->finalCoins === 0) {
             return new StrategyResult(
-                rewardType:     $this->handles(),
-                status:         $reward->isDryRun ? RewardStatus::Validated : RewardStatus::Skipped,
+                rewardType: $this->handles(),
+                status: $reward->isDryRun ? RewardStatus::Validated : RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
-                coinsGranted:   $reward->finalCoins,
+                userId: $reward->userId,
+                coinsGranted: $reward->finalCoins,
             );
         }
 
@@ -57,44 +58,44 @@ final class CoinRewardStrategy implements RewardStrategyContract
 
         try {
             $balanceAfter = $this->coinLedger->credit(
-                userId:      $reward->userId,
-                amount:      $reward->finalCoins,
-                source:      $this->resolveCoinSource($reward->extras['source'] ?? RewardSource::Mission->value),
-                sourceId:    $reward->idempotencyKey,
+                userId: $reward->userId,
+                amount: $reward->finalCoins,
+                source: $this->resolveCoinSource($reward->extras['source'] ?? RewardSource::Mission->value),
+                sourceId: $reward->idempotencyKey,
                 description: "Reward: {$reward->rewardType->value} ({$reward->idempotencyKey})",
             );
         } catch (UniqueConstraintViolationException) {
             // Already credited — idempotent no-op
             Log::info('[RewardEngine:CoinStrategy] Duplicate idempotency key, skipping credit', [
                 'user_id' => $reward->userId,
-                'key'     => $reward->idempotencyKey,
+                'key' => $reward->idempotencyKey,
             ]);
 
             return new StrategyResult(
-                rewardType:     $this->handles(),
-                status:         RewardStatus::Skipped,
+                rewardType: $this->handles(),
+                status: RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
-                wasIdempotent:  true,
+                userId: $reward->userId,
+                wasIdempotent: true,
             );
         }
 
         Log::info('[RewardEngine:CoinStrategy] Coins credited', [
-            'user_id'       => $reward->userId,
-            'coins_paise'   => $reward->finalCoins,
+            'user_id' => $reward->userId,
+            'coins_paise' => $reward->finalCoins,
             'balance_after' => $balanceAfter,
-            'key'           => $reward->idempotencyKey,
+            'key' => $reward->idempotencyKey,
         ]);
 
         return new StrategyResult(
-            rewardType:     $this->handles(),
-            status:         RewardStatus::Distributed,
+            rewardType: $this->handles(),
+            status: RewardStatus::Distributed,
             idempotencyKey: $reward->idempotencyKey,
-            userId:         $reward->userId,
-            coinsGranted:   $reward->finalCoins,
-            extras:         [
+            userId: $reward->userId,
+            coinsGranted: $reward->finalCoins,
+            extras: [
                 'balance_before' => $balanceBefore,
-                'balance_after'  => $balanceAfter,
+                'balance_after' => $balanceAfter,
             ],
         );
     }
@@ -105,17 +106,17 @@ final class CoinRewardStrategy implements RewardStrategyContract
         // Source ID is suffixed with ':rollback' to avoid duplicate key with the original.
         try {
             $this->coinLedger->debit(
-                userId:      $context->userId(),
-                amount:      0, // Amount looked up from original ledger entry — TODO: query coin_transactions
-                source:      CoinTransactionSource::Refund,
-                sourceId:    $idempotencyKey . ':rollback',
+                userId: $context->userId(),
+                amount: 0, // Amount looked up from original ledger entry — TODO: query coin_transactions
+                source: CoinTransactionSource::Refund,
+                sourceId: $idempotencyKey.':rollback',
                 description: "Rollback reward: {$idempotencyKey}",
             );
         } catch (\Throwable $e) {
             Log::error('[RewardEngine:CoinStrategy] Rollback debit failed', [
-                'user_id'         => $context->userId(),
+                'user_id' => $context->userId(),
                 'idempotency_key' => $idempotencyKey,
-                'error'           => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
         }
 
@@ -128,13 +129,13 @@ final class CoinRewardStrategy implements RewardStrategyContract
     {
         return match ($sourceValue) {
             RewardSource::Achievement->value => CoinTransactionSource::Achievement,
-            RewardSource::Mission->value     => CoinTransactionSource::Challenge,
-            RewardSource::LevelUp->value     => CoinTransactionSource::LevelUp,
-            RewardSource::Referral->value    => CoinTransactionSource::Referral,
-            RewardSource::DailyLogin->value  => CoinTransactionSource::DailyLogin,
-            RewardSource::Season->value      => CoinTransactionSource::SeasonReward,
-            RewardSource::Admin->value       => CoinTransactionSource::AdminGrant,
-            default                          => CoinTransactionSource::AdminGrant,
+            RewardSource::Mission->value => CoinTransactionSource::Challenge,
+            RewardSource::LevelUp->value => CoinTransactionSource::LevelUp,
+            RewardSource::Referral->value => CoinTransactionSource::Referral,
+            RewardSource::DailyLogin->value => CoinTransactionSource::DailyLogin,
+            RewardSource::Season->value => CoinTransactionSource::SeasonReward,
+            RewardSource::Admin->value => CoinTransactionSource::AdminGrant,
+            default => CoinTransactionSource::AdminGrant,
         };
     }
 }

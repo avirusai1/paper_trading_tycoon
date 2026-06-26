@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Contracts;
@@ -6,6 +7,7 @@ namespace App\GameEngine\Contracts;
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\GameResult;
 use App\GameEngine\Events\GameEvent;
+use App\GameEngine\Exceptions\GameEngineException;
 
 /**
  * Central Game Engine contract.
@@ -27,7 +29,7 @@ interface GameEngineContract
      * occurred as a result of this event (XP gained, level-ups, missions
      * progressed, achievements unlocked, coins awarded, etc.).
      *
-     * @throws \App\GameEngine\Exceptions\GameEngineException
+     * @throws GameEngineException
      */
     public function process(GameEvent $event): GameResult;
 
@@ -35,7 +37,7 @@ interface GameEngineContract
      * Build the full GameContext for a user without processing an event.
      * Used by APIs to return current player state to the client.
      *
-     * @throws \App\GameEngine\Exceptions\GameEngineException
+     * @throws GameEngineException
      */
     public function buildContext(int $userId): GameContext;
 }

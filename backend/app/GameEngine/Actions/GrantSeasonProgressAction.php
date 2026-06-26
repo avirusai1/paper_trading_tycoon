@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Actions;
@@ -6,6 +7,7 @@ namespace App\GameEngine\Actions;
 use App\Enums\CoinTransactionSource;
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\SeasonResult;
+use App\GameEngine\Enums\XPSource;
 use App\GameEngine\Exceptions\SeasonException;
 use App\Models\Season;
 use App\Models\SeasonReward;
@@ -24,7 +26,7 @@ final class GrantSeasonProgressAction
 {
     public function __construct(
         private readonly GrantCoinsAction $grantCoins,
-        private readonly GrantXPAction    $grantXP,
+        private readonly GrantXPAction $grantXP,
     ) {}
 
     /**
@@ -44,12 +46,12 @@ final class GrantSeasonProgressAction
 
             if ($userLeague->rewards_claimed) {
                 return new SeasonResult(
-                    userId:       $context->userId(),
-                    seasonId:     $season->id,
-                    seasonName:   $season->name,
-                    enrolled:     false,
+                    userId: $context->userId(),
+                    seasonId: $season->id,
+                    seasonName: $season->name,
+                    enrolled: false,
                     coinsGranted: 0,
-                    xpGranted:    0,
+                    xpGranted: 0,
                 );
             }
 
@@ -61,13 +63,13 @@ final class GrantSeasonProgressAction
                 ->first();
 
             $coinsGranted = 0;
-            $xpGranted    = 0;
+            $xpGranted = 0;
 
             if ($reward !== null) {
                 $sourceId = "season_{$season->id}_user_{$context->userId()}";
 
                 if ($reward->coin_reward > 0) {
-                    $rewardResult  = $this->grantCoins->credit(
+                    $rewardResult = $this->grantCoins->credit(
                         $context,
                         CoinTransactionSource::SeasonReward,
                         $sourceId,
@@ -78,9 +80,9 @@ final class GrantSeasonProgressAction
                 }
 
                 if ($reward->xp_reward > 0) {
-                    $xpResult  = $this->grantXP->execute(
+                    $xpResult = $this->grantXP->execute(
                         $context,
-                        \App\GameEngine\Enums\XPSource::SeasonReward,
+                        XPSource::SeasonReward,
                         $sourceId,
                         $reward->xp_reward,
                     );
@@ -91,12 +93,12 @@ final class GrantSeasonProgressAction
             $userLeague->update(['rewards_claimed' => true]);
 
             return new SeasonResult(
-                userId:       $context->userId(),
-                seasonId:     $season->id,
-                seasonName:   $season->name,
-                enrolled:     false,
+                userId: $context->userId(),
+                seasonId: $season->id,
+                seasonName: $season->name,
+                enrolled: false,
                 coinsGranted: $coinsGranted,
-                xpGranted:    $xpGranted,
+                xpGranted: $xpGranted,
             );
         });
     }

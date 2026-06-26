@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Actions;
@@ -9,6 +10,7 @@ use App\GameEngine\DTOs\RewardResult;
 use App\GameEngine\Exceptions\RewardException;
 use App\Models\CoinTransaction;
 use App\Models\Wallet;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -27,31 +29,31 @@ final class GrantCoinsAction
      * @throws RewardException
      */
     public function credit(
-        GameContext           $context,
+        GameContext $context,
         CoinTransactionSource $source,
-        string                $sourceId,
-        int                   $amount,
-        ?string               $description = null,
+        string $sourceId,
+        int $amount,
+        ?string $description = null,
     ): RewardResult {
         if ($amount <= 0) {
             throw RewardException::negativeAmount($amount);
         }
 
         return DB::transaction(function () use ($context, $source, $sourceId, $amount, $description): RewardResult {
-            $wallet       = Wallet::where('user_id', $context->userId())->lockForUpdate()->firstOrFail();
+            $wallet = Wallet::where('user_id', $context->userId())->lockForUpdate()->firstOrFail();
             $balanceBefore = $wallet->coin_balance;
-            $balanceAfter  = $balanceBefore + $amount;
+            $balanceAfter = $balanceBefore + $amount;
 
             try {
                 CoinTransaction::create([
-                    'user_id'      => $context->userId(),
-                    'amount'       => $amount,
-                    'source_type'  => $source,
-                    'source_id'    => $sourceId,
-                    'balance_after'=> $balanceAfter,
-                    'description'  => $description,
+                    'user_id' => $context->userId(),
+                    'amount' => $amount,
+                    'source_type' => $source,
+                    'source_id' => $sourceId,
+                    'balance_after' => $balanceAfter,
+                    'description' => $description,
                 ]);
-            } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+            } catch (UniqueConstraintViolationException) {
                 // Idempotent — already credited, reconstruct result from existing record
                 $existing = CoinTransaction::where('user_id', $context->userId())
                     ->where('source_type', $source)
@@ -59,27 +61,27 @@ final class GrantCoinsAction
                     ->firstOrFail();
 
                 return new RewardResult(
-                    userId:        $context->userId(),
-                    coinsGranted:  $existing->amount,
+                    userId: $context->userId(),
+                    coinsGranted: $existing->amount,
                     balanceBefore: $existing->balance_after - $existing->amount,
-                    balanceAfter:  $existing->balance_after,
-                    source:        $source->value,
-                    sourceId:      $sourceId,
+                    balanceAfter: $existing->balance_after,
+                    source: $source->value,
+                    sourceId: $sourceId,
                 );
             }
 
             $wallet->update([
-                'coin_balance'            => $balanceAfter,
+                'coin_balance' => $balanceAfter,
                 'coin_balance_updated_at' => now(),
             ]);
 
             return new RewardResult(
-                userId:        $context->userId(),
-                coinsGranted:  $amount,
+                userId: $context->userId(),
+                coinsGranted: $amount,
                 balanceBefore: $balanceBefore,
-                balanceAfter:  $balanceAfter,
-                source:        $source->value,
-                sourceId:      $sourceId,
+                balanceAfter: $balanceAfter,
+                source: $source->value,
+                sourceId: $sourceId,
             );
         });
     }
@@ -88,18 +90,18 @@ final class GrantCoinsAction
      * @throws RewardException
      */
     public function debit(
-        GameContext           $context,
+        GameContext $context,
         CoinTransactionSource $source,
-        string                $sourceId,
-        int                   $amount,
-        ?string               $description = null,
+        string $sourceId,
+        int $amount,
+        ?string $description = null,
     ): RewardResult {
         if ($amount <= 0) {
             throw RewardException::negativeAmount($amount);
         }
 
         return DB::transaction(function () use ($context, $source, $sourceId, $amount, $description): RewardResult {
-            $wallet        = Wallet::where('user_id', $context->userId())->lockForUpdate()->firstOrFail();
+            $wallet = Wallet::where('user_id', $context->userId())->lockForUpdate()->firstOrFail();
             $balanceBefore = $wallet->coin_balance;
 
             if ($balanceBefore < $amount) {
@@ -109,26 +111,26 @@ final class GrantCoinsAction
             $balanceAfter = $balanceBefore - $amount;
 
             CoinTransaction::create([
-                'user_id'       => $context->userId(),
-                'amount'        => -$amount, // negative = debit
-                'source_type'   => $source,
-                'source_id'     => $sourceId,
+                'user_id' => $context->userId(),
+                'amount' => -$amount, // negative = debit
+                'source_type' => $source,
+                'source_id' => $sourceId,
                 'balance_after' => $balanceAfter,
-                'description'   => $description,
+                'description' => $description,
             ]);
 
             $wallet->update([
-                'coin_balance'            => $balanceAfter,
+                'coin_balance' => $balanceAfter,
                 'coin_balance_updated_at' => now(),
             ]);
 
             return new RewardResult(
-                userId:        $context->userId(),
-                coinsGranted:  -$amount,
+                userId: $context->userId(),
+                coinsGranted: -$amount,
                 balanceBefore: $balanceBefore,
-                balanceAfter:  $balanceAfter,
-                source:        $source->value,
-                sourceId:      $sourceId,
+                balanceAfter: $balanceAfter,
+                source: $source->value,
+                sourceId: $sourceId,
             );
         });
     }

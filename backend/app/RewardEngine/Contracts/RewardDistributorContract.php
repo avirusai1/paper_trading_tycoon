@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Contracts;
@@ -6,6 +7,8 @@ namespace App\RewardEngine\Contracts;
 use App\RewardEngine\Contexts\RewardContext;
 use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\DistributionResult;
+use App\RewardEngine\Exceptions\RewardDistributionException;
+use App\RewardEngine\Exceptions\RewardRollbackException;
 
 /**
  * Contract for persisting a calculated reward to its target stores
@@ -22,14 +25,14 @@ interface RewardDistributorContract
     /**
      * Persist the calculated reward. Idempotent.
      *
-     * @throws \App\RewardEngine\Exceptions\RewardDistributionException
+     * @throws RewardDistributionException
      */
     public function distribute(CalculatedReward $reward, RewardContext $context): DistributionResult;
 
     /**
      * Reverse a previously distributed reward.
      *
-     * @throws \App\RewardEngine\Exceptions\RewardRollbackException
+     * @throws RewardRollbackException
      */
     public function rollback(string $idempotencyKey, RewardContext $context): DistributionResult;
 }

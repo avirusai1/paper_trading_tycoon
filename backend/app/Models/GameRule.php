@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -11,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 final class GameRule extends Model
 {
+    use HasFactory;
     protected $fillable = ['key', 'group', 'value', 'value_type', 'description', 'is_overridable'];
 
     protected function casts(): array
@@ -25,14 +29,14 @@ final class GameRule extends Model
     {
         return match ($this->value_type) {
             'integer' => (int) $this->value,
-            'float'   => (float) $this->value,
+            'float' => (float) $this->value,
             'boolean' => filter_var($this->value, FILTER_VALIDATE_BOOLEAN),
-            'json'    => json_decode($this->value, true),
-            default   => $this->value,
+            'json' => json_decode($this->value, true),
+            default => $this->value,
         };
     }
 
-    public function scopeGroup(\Illuminate\Database\Eloquent\Builder $query, string $group): \Illuminate\Database\Eloquent\Builder
+    public function scopeGroup(Builder $query, string $group): Builder
     {
         return $query->where('group', $group);
     }

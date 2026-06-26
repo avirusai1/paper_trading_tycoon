@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Pipelines;
@@ -6,8 +7,8 @@ namespace App\RewardEngine\Pipelines;
 use App\RewardEngine\Actions\DistributeRewardAction;
 use App\RewardEngine\Actions\RecordRewardHistoryAction;
 use App\RewardEngine\Actions\RollbackRewardAction;
-use App\RewardEngine\Contracts\RewardValidatorContract;
 use App\RewardEngine\Contexts\RewardContext;
+use App\RewardEngine\Contracts\RewardValidatorContract;
 use App\RewardEngine\DTOs\DistributionResult;
 use App\RewardEngine\DTOs\RewardEngineResult;
 use App\RewardEngine\DTOs\RewardRequest;
@@ -49,9 +50,9 @@ final class RewardPipeline
      * @param  RewardValidatorContract[]  $validators  Executed in order.
      */
     public function __construct(
-        private readonly array                   $validators,
-        private readonly DistributeRewardAction  $distributeAction,
-        private readonly RollbackRewardAction    $rollbackAction,
+        private readonly array $validators,
+        private readonly DistributeRewardAction $distributeAction,
+        private readonly RollbackRewardAction $rollbackAction,
         private readonly RecordRewardHistoryAction $recordHistoryAction,
     ) {}
 
@@ -79,8 +80,8 @@ final class RewardPipeline
 
             Log::info('[RewardPipeline] Validation failed', [
                 'user_id' => $request->userId,
-                'reason'  => $e->reason->value,
-                'key'     => $request->idempotencyKey,
+                'reason' => $e->reason->value,
+                'key' => $request->idempotencyKey,
             ]);
 
             Event::dispatch(new RewardFailed(
@@ -96,15 +97,15 @@ final class RewardPipeline
             // Validation failures are not thrown — they return a Failed result.
             // This allows callers to inspect the failure reason without exception handling.
             return new RewardEngineResult(
-                idempotencyKey:    $request->idempotencyKey,
-                userId:            $request->userId,
-                status:            RewardStatus::Failed,
-                rewardType:        $request->rewardType,
-                totalXPGranted:    0,
+                idempotencyKey: $request->idempotencyKey,
+                userId: $request->userId,
+                status: RewardStatus::Failed,
+                rewardType: $request->rewardType,
+                totalXPGranted: 0,
                 totalCoinsGranted: 0,
                 distributionResults: [],
-                failureReason:     $e->reason->value,
-                processingTimeMs:  $elapsed,
+                failureReason: $e->reason->value,
+                processingTimeMs: $elapsed,
             );
         }
 
@@ -141,26 +142,26 @@ final class RewardPipeline
                 // Log and continue — the xp_logs/coin_transactions are the source of truth.
                 Log::error('[RewardPipeline] Failed to write reward_history — reward was distributed', [
                     'user_id' => $request->userId,
-                    'key'     => $request->idempotencyKey,
-                    'error'   => $e->getMessage(),
+                    'key' => $request->idempotencyKey,
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
 
         // ── Stage 5: Success event + result ──────────────────────────────────
-        $totalXP    = array_sum(array_map(fn ($r) => $r->xpGranted, $distributionResults));
+        $totalXP = array_sum(array_map(fn ($r) => $r->xpGranted, $distributionResults));
         $totalCoins = array_sum(array_map(fn ($r) => $r->coinsGranted, $distributionResults));
-        $elapsed    = $this->elapsed($startTime);
+        $elapsed = $this->elapsed($startTime);
 
         $engineResult = new RewardEngineResult(
-            idempotencyKey:      $request->idempotencyKey,
-            userId:              $request->userId,
-            status:              RewardStatus::Recorded,
-            rewardType:          $request->rewardType,
-            totalXPGranted:      $totalXP,
-            totalCoinsGranted:   $totalCoins,
+            idempotencyKey: $request->idempotencyKey,
+            userId: $request->userId,
+            status: RewardStatus::Recorded,
+            rewardType: $request->rewardType,
+            totalXPGranted: $totalXP,
+            totalCoinsGranted: $totalCoins,
             distributionResults: $distributionResults,
-            processingTimeMs:    $elapsed,
+            processingTimeMs: $elapsed,
         );
 
         Event::dispatch(new RewardGranted(
@@ -174,12 +175,12 @@ final class RewardPipeline
         ));
 
         Log::info('[RewardPipeline] Reward granted', [
-            'user_id'     => $request->userId,
-            'type'        => $request->rewardType->value,
-            'source'      => $request->source->value,
-            'xp'          => $totalXP,
+            'user_id' => $request->userId,
+            'type' => $request->rewardType->value,
+            'source' => $request->source->value,
+            'xp' => $totalXP,
             'coins_paise' => $totalCoins,
-            'ms'          => $elapsed,
+            'ms' => $elapsed,
         ]);
 
         return $engineResult;
@@ -200,9 +201,9 @@ final class RewardPipeline
             ));
         } catch (Throwable $rbEx) {
             Log::critical('[RewardPipeline] ROLLBACK FAILED — manual reconciliation required', [
-                'user_id'         => $request->userId,
+                'user_id' => $request->userId,
                 'idempotency_key' => $request->idempotencyKey,
-                'rollback_error'  => $rbEx->getMessage(),
+                'rollback_error' => $rbEx->getMessage(),
             ]);
         }
     }
@@ -212,17 +213,17 @@ final class RewardPipeline
      */
     private function failResult(
         RewardRequest $request,
-        float         $startTime,
-        Throwable     $e,
-        array         $partial = [],
+        float $startTime,
+        Throwable $e,
+        array $partial = [],
     ): RewardEngineResult {
         $elapsed = $this->elapsed($startTime);
 
         Log::error('[RewardPipeline] Reward failed', [
-            'user_id'   => $request->userId,
-            'key'       => $request->idempotencyKey,
+            'user_id' => $request->userId,
+            'key' => $request->idempotencyKey,
             'exception' => $e::class,
-            'message'   => $e->getMessage(),
+            'message' => $e->getMessage(),
         ]);
 
         Event::dispatch(new RewardFailed(
@@ -236,15 +237,15 @@ final class RewardPipeline
         ));
 
         return new RewardEngineResult(
-            idempotencyKey:      $request->idempotencyKey,
-            userId:              $request->userId,
-            status:              RewardStatus::Failed,
-            rewardType:          $request->rewardType,
-            totalXPGranted:      0,
-            totalCoinsGranted:   0,
+            idempotencyKey: $request->idempotencyKey,
+            userId: $request->userId,
+            status: RewardStatus::Failed,
+            rewardType: $request->rewardType,
+            totalXPGranted: 0,
+            totalCoinsGranted: 0,
             distributionResults: $partial,
-            failureReason:       $e->getMessage(),
-            processingTimeMs:    $elapsed,
+            failureReason: $e->getMessage(),
+            processingTimeMs: $elapsed,
         );
     }
 

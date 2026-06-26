@@ -1,15 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\RewardEngine;
 
 use App\GameEngine\Contracts\GameRuleProviderContract;
+use App\Models\User;
+use App\Models\UserLevel;
+use App\Models\Wallet;
 use App\RewardEngine\Calculators\MultiplierResolver;
 use App\RewardEngine\Contexts\RewardContext;
-use App\RewardEngine\DTOs\RewardRequest;
 use App\RewardEngine\Enums\MultiplierType;
-use App\RewardEngine\Enums\RewardSource;
-use App\RewardEngine\Enums\RewardType;
 use Mockery;
 use Tests\TestCase;
 
@@ -22,12 +23,8 @@ class MultiplierResolverTest extends TestCase
     /** @test */
     public function it_returns_1_when_no_multipliers_apply(): void
     {
-        $rules    = Mockery::mock(GameRuleProviderContract::class);
+        $rules = Mockery::mock(GameRuleProviderContract::class);
         $resolver = new MultiplierResolver($rules);
-
-        $context = Mockery::mock(RewardContext::class);
-        $context->shouldReceive('isPremium')->andReturn(false);
-        $context->allowMockingNonExistentMethods(true);
 
         // When no premium, no weekend, and no season bonus active, resolve returns 1.0
         $result = $resolver->resolve(MultiplierType::XP, $this->makeContext(isPremium: false, isWeekend: false));
@@ -47,7 +44,7 @@ class MultiplierResolverTest extends TestCase
             ->andReturn(1.5);
 
         $resolver = new MultiplierResolver($rules);
-        $context  = $this->makeContext(isPremium: true, isWeekend: true);
+        $context = $this->makeContext(isPremium: true, isWeekend: true);
 
         $result = $resolver->resolve(MultiplierType::XP, $context);
 
@@ -62,7 +59,7 @@ class MultiplierResolverTest extends TestCase
         $rules->shouldReceive('getFloat')->andReturn(0.0);
 
         $resolver = new MultiplierResolver($rules);
-        $context  = $this->makeContext(isPremium: true, isWeekend: false);
+        $context = $this->makeContext(isPremium: true, isWeekend: false);
 
         $result = $resolver->resolve(MultiplierType::XP, $context);
 
@@ -73,14 +70,20 @@ class MultiplierResolverTest extends TestCase
 
     private function makeContext(bool $isPremium, bool $isWeekend): RewardContext
     {
-        $context                = Mockery::mock(RewardContext::class);
-        $context->isPremium     = $isPremium;
-        $context->isWeekend     = $isWeekend;
-        $context->multipliers   = [];
-
-        $context->shouldReceive('hasActiveSeason')->andReturn(false);
-        $context->shouldReceive('getItemEffectValue')->andReturn(null);
-
-        return $context;
+        return new RewardContext(
+            user: new User,
+            wallet: new Wallet,
+            userLevel: new UserLevel,
+            activeSeason: null,
+            userLeague: null,
+            featureFlags: [],
+            multipliers: [],
+            equippedItems: [],
+            isPremium: $isPremium,
+            isBanned: false,
+            builtAt: now(),
+            isWeekend: $isWeekend,
+            extra: []
+        );
     }
 }

@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Calculators;
 
 use App\GameEngine\Contracts\GameRuleProviderContract;
 use App\RewardEngine\Contexts\RewardContext;
+use App\RewardEngine\Contracts\MultiplierResolverContract;
 use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\RewardRequest;
-use App\RewardEngine\Enums\MultiplierType;
 use App\RewardEngine\Enums\RewardType;
 use App\RewardEngine\Exceptions\RewardCalculationException;
 
@@ -23,7 +24,7 @@ final class XPCalculator
 {
     public function __construct(
         private readonly GameRuleProviderContract $rules,
-        private readonly MultiplierResolver       $multiplierResolver,
+        private readonly MultiplierResolverContract $multiplierResolver,
     ) {}
 
     /**
@@ -35,8 +36,8 @@ final class XPCalculator
         if ($request->overrideAmount !== null) {
             $baseXP = $request->overrideAmount;
         } else {
-            $ruleKey = 'rewards.xp.' . $request->source->value;
-            $baseXP  = $this->rules->getInt($ruleKey, -1);
+            $ruleKey = 'rewards.xp.'.$request->source->value;
+            $baseXP = $this->rules->getInt($ruleKey, -1);
 
             if ($baseXP < 0) {
                 throw RewardCalculationException::missingRule($ruleKey);
@@ -57,14 +58,14 @@ final class XPCalculator
         }
 
         return new CalculatedReward(
-            rewardType:          RewardType::XP,
-            idempotencyKey:      $request->idempotencyKey,
-            userId:              $request->userId,
-            baseXP:              $baseXP,
-            finalXP:             $finalXP,
-            totalMultiplier:     $totalMultiplier,
+            rewardType: RewardType::XP,
+            idempotencyKey: $request->idempotencyKey,
+            userId: $request->userId,
+            baseXP: $baseXP,
+            finalXP: $finalXP,
+            totalMultiplier: $totalMultiplier,
             multiplierBreakdown: $multiplierBreakdown,
-            isDryRun:            $request->dryRun,
+            isDryRun: $request->dryRun,
         );
     }
 }

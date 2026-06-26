@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Exceptions;
@@ -15,8 +16,8 @@ final class RewardValidationException extends RewardEngineException
 {
     public function __construct(
         public readonly ValidationFailureReason $reason,
-        string                                  $message = '',
-        ?\Throwable                             $previous = null,
+        string $message = '',
+        ?\Throwable $previous = null,
     ) {
         parent::__construct(
             $message ?: $reason->value,
@@ -62,7 +63,7 @@ final class RewardValidationException extends RewardEngineException
     {
         return new self(
             ValidationFailureReason::Expired,
-            "Reward has expired" . ($detail ? ": {$detail}" : '.'),
+            'Reward has expired'.($detail ? ": {$detail}" : '.'),
         );
     }
 

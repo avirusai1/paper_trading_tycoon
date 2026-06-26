@@ -10,9 +10,9 @@ namespace App\Enums;
  */
 enum AchievementTier: string
 {
-    case Bronze   = 'bronze';
-    case Silver   = 'silver';
-    case Gold     = 'gold';
+    case Bronze = 'bronze';
+    case Silver = 'silver';
+    case Gold = 'gold';
     case Platinum = 'platinum';
-    case Hidden   = 'hidden'; // Revealed only when unlocked
+    case Hidden = 'hidden'; // Revealed only when unlocked
 }

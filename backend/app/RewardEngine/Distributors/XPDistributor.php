@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Distributors;
@@ -10,6 +11,7 @@ use App\RewardEngine\Contracts\RewardDistributorContract;
 use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\DistributionResult;
 use App\RewardEngine\Enums\RewardStatus;
+use App\RewardEngine\Enums\RewardType;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Log;
 
@@ -30,42 +32,42 @@ final class XPDistributor implements RewardDistributorContract
     {
         if ($reward->finalXP === 0 || $reward->isDryRun) {
             return new DistributionResult(
-                rewardType:     $reward->rewardType,
-                status:         RewardStatus::Skipped,
+                rewardType: $reward->rewardType,
+                status: RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
-                xpBefore:       $context->currentXP(),
-                xpAfter:        $context->currentXP(),
+                userId: $reward->userId,
+                xpBefore: $context->currentXP(),
+                xpAfter: $context->currentXP(),
             );
         }
 
         try {
             $xpResult = $this->xpProcessor->grant(
-                context:        null,
-                source:         XPSource::AdminGrant,
-                sourceId:       $reward->idempotencyKey,
+                context: null,
+                source: XPSource::AdminGrant,
+                sourceId: $reward->idempotencyKey,
                 overrideAmount: $reward->finalXP,
             );
         } catch (UniqueConstraintViolationException) {
             Log::info('[RewardEngine:XPDistributor] Duplicate — skipping XP grant', [
                 'user_id' => $reward->userId,
-                'key'     => $reward->idempotencyKey,
+                'key' => $reward->idempotencyKey,
             ]);
 
             return DistributionResult::skipped($reward->rewardType, $reward->idempotencyKey, $reward->userId);
         }
 
         return new DistributionResult(
-            rewardType:     $reward->rewardType,
-            status:         RewardStatus::Distributed,
+            rewardType: $reward->rewardType,
+            status: RewardStatus::Distributed,
             idempotencyKey: $reward->idempotencyKey,
-            userId:         $reward->userId,
-            xpGranted:      $xpResult->amountGranted,
-            xpBefore:       $xpResult->xpBefore,
-            xpAfter:        $xpResult->xpAfter,
-            extras:         [
+            userId: $reward->userId,
+            xpGranted: $xpResult->amountGranted,
+            xpBefore: $xpResult->xpBefore,
+            xpAfter: $xpResult->xpAfter,
+            extras: [
                 'level_before' => $xpResult->levelBefore,
-                'level_after'  => $xpResult->levelAfter,
+                'level_after' => $xpResult->levelAfter,
                 'did_level_up' => $xpResult->didLevelUp,
             ],
         );
@@ -75,15 +77,15 @@ final class XPDistributor implements RewardDistributorContract
     {
         // XP is append-only — no debit. Log and return RolledBack status.
         Log::warning('[RewardEngine:XPDistributor] XP rollback requested — XP is append-only', [
-            'user_id'         => $context->userId(),
+            'user_id' => $context->userId(),
             'idempotency_key' => $idempotencyKey,
         ]);
 
         return new DistributionResult(
-            rewardType:     \App\RewardEngine\Enums\RewardType::XP,
-            status:         RewardStatus::RolledBack,
+            rewardType: RewardType::XP,
+            status: RewardStatus::RolledBack,
             idempotencyKey: $idempotencyKey,
-            userId:         $context->userId(),
+            userId: $context->userId(),
         );
     }
 }

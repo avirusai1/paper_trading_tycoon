@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Calculators;
@@ -99,9 +100,9 @@ final class MultiplierResolver implements MultiplierResolverContract
         // Premium bonus
         if ($context->isPremium) {
             $premiumType = match ($type) {
-                MultiplierType::XP     => MultiplierType::PremiumXP,
-                MultiplierType::Coins  => MultiplierType::PremiumCoins,
-                default                => null,
+                MultiplierType::XP => MultiplierType::PremiumXP,
+                MultiplierType::Coins => MultiplierType::PremiumCoins,
+                default => null,
             };
             if ($premiumType !== null) {
                 $values[] = $this->rules->getFloat($premiumType->ruleKey(), 1.0);
@@ -111,9 +112,9 @@ final class MultiplierResolver implements MultiplierResolverContract
         // Weekend bonus
         if ($context->isWeekend) {
             $weekendType = match ($type) {
-                MultiplierType::XP     => MultiplierType::WeekendXP,
-                MultiplierType::Coins  => MultiplierType::WeekendCoins,
-                default                => null,
+                MultiplierType::XP => MultiplierType::WeekendXP,
+                MultiplierType::Coins => MultiplierType::WeekendCoins,
+                default => null,
             };
             if ($weekendType !== null) {
                 $values[] = $this->rules->getFloat($weekendType->ruleKey(), 1.0);
@@ -127,9 +128,9 @@ final class MultiplierResolver implements MultiplierResolverContract
 
         // Equipped item effects
         $effectKey = match ($type) {
-            MultiplierType::XP    => 'xp_boost',
+            MultiplierType::XP => 'xp_boost',
             MultiplierType::Coins => 'coin_boost',
-            default               => null,
+            default => null,
         };
         if ($effectKey !== null) {
             $itemEffect = $context->getItemEffectValue($effectKey);

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\States;
@@ -53,19 +54,66 @@ final class GameResultBuilder
 
     public function __construct(
         private readonly GameEvent $event,
-        private readonly int       $userId,
+        private readonly int $userId,
     ) {
         $this->startedAt = microtime(true);
     }
 
-    public function addXP(XPResult $result): self               { $this->xpResults[]          = $result; return $this; }
-    public function addLevel(LevelResult $result): self         { $this->levelResults[]        = $result; return $this; }
-    public function addCareer(CareerResult $result): self       { $this->careerResults[]       = $result; return $this; }
-    public function addMission(MissionResult $result): self     { $this->missionResults[]      = $result; return $this; }
-    public function addAchievement(AchievementResult $r): self  { $this->achievementResults[]  = $r;      return $this; }
-    public function addLeague(LeagueResult $result): self       { $this->leagueResults[]       = $result; return $this; }
-    public function addSeason(SeasonResult $result): self       { $this->seasonResults[]       = $result; return $this; }
-    public function addReward(RewardResult $result): self       { $this->rewardResults[]       = $result; return $this; }
+    public function addXP(XPResult $result): self
+    {
+        $this->xpResults[] = $result;
+
+        return $this;
+    }
+
+    public function addLevel(LevelResult $result): self
+    {
+        $this->levelResults[] = $result;
+
+        return $this;
+    }
+
+    public function addCareer(CareerResult $result): self
+    {
+        $this->careerResults[] = $result;
+
+        return $this;
+    }
+
+    public function addMission(MissionResult $result): self
+    {
+        $this->missionResults[] = $result;
+
+        return $this;
+    }
+
+    public function addAchievement(AchievementResult $r): self
+    {
+        $this->achievementResults[] = $r;
+
+        return $this;
+    }
+
+    public function addLeague(LeagueResult $result): self
+    {
+        $this->leagueResults[] = $result;
+
+        return $this;
+    }
+
+    public function addSeason(SeasonResult $result): self
+    {
+        $this->seasonResults[] = $result;
+
+        return $this;
+    }
+
+    public function addReward(RewardResult $result): self
+    {
+        $this->rewardResults[] = $result;
+
+        return $this;
+    }
 
     /** @param MissionResult[] $results */
     public function addMissions(array $results): self
@@ -73,6 +121,7 @@ final class GameResultBuilder
         foreach ($results as $r) {
             $this->missionResults[] = $r;
         }
+
         return $this;
     }
 
@@ -82,23 +131,24 @@ final class GameResultBuilder
         foreach ($results as $r) {
             $this->achievementResults[] = $r;
         }
+
         return $this;
     }
 
     public function build(): GameResult
     {
         return new GameResult(
-            triggerEvent:       $this->event,
-            userId:             $this->userId,
-            xpResults:          $this->xpResults,
-            levelResults:       $this->levelResults,
-            careerResults:      $this->careerResults,
-            missionResults:     $this->missionResults,
+            triggerEvent: $this->event,
+            userId: $this->userId,
+            xpResults: $this->xpResults,
+            levelResults: $this->levelResults,
+            careerResults: $this->careerResults,
+            missionResults: $this->missionResults,
             achievementResults: $this->achievementResults,
-            leagueResults:      $this->leagueResults,
-            seasonResults:      $this->seasonResults,
-            rewardResults:      $this->rewardResults,
-            processingTimeMs:   round((microtime(true) - $this->startedAt) * 1000, 2),
+            leagueResults: $this->leagueResults,
+            seasonResults: $this->seasonResults,
+            rewardResults: $this->rewardResults,
+            processingTimeMs: round((microtime(true) - $this->startedAt) * 1000, 2),
         );
     }
 }

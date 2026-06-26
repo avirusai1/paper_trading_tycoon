@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Factories;
@@ -12,8 +13,8 @@ final class UserLevelFactory extends Factory
     protected $model = UserLevel::class;
 
     private const TITLE_MAP = [
-        1  => 'Student Trader',
-        6  => 'Intern Trader',
+        1 => 'Student Trader',
+        6 => 'Intern Trader',
         11 => 'Junior Trader',
         16 => 'Retail Trader',
         21 => 'Professional Trader',
@@ -22,7 +23,7 @@ final class UserLevelFactory extends Factory
     public function definition(): array
     {
         $level = $this->faker->numberBetween(1, 25);
-        $xp    = $level * 500 + $this->faker->numberBetween(0, 499);
+        $xp = $level * 500 + $this->faker->numberBetween(0, 499);
 
         $title = 'Student Trader';
         foreach (self::TITLE_MAP as $minLevel => $t) {
@@ -32,12 +33,12 @@ final class UserLevelFactory extends Factory
         }
 
         return [
-            'user_id'             => User::factory(),
-            'current_level'       => $level,
-            'current_xp'          => $xp,
+            'user_id' => User::factory(),
+            'current_level' => $level,
+            'current_xp' => $xp,
             'xp_in_current_level' => $xp % 500,
-            'career_title'        => $title,
-            'level_achieved_at'   => $this->faker->dateTimeBetween('-180 days', 'now'),
+            'career_title' => $title,
+            'level_achieved_at' => $this->faker->dateTimeBetween('-180 days', 'now'),
         ];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Seeders;
@@ -15,8 +16,8 @@ final class LevelsSeeder extends Seeder
     public function run(): void
     {
         $careerTitleMap = [
-            1  => 'Student Trader',
-            6  => 'Intern Trader',
+            1 => 'Student Trader',
+            6 => 'Intern Trader',
             11 => 'Junior Trader',
             16 => 'Retail Trader',
             21 => 'Professional Trader',
@@ -30,7 +31,7 @@ final class LevelsSeeder extends Seeder
         $cumulative = 0;
 
         for ($level = 1; $level <= 100; $level++) {
-            $xpToNext   = (int) round(100 * ($level ** 1.5));
+            $xpToNext = (int) round(100 * ($level ** 1.5));
             $cumulative += ($level === 1 ? 0 : (int) round(100 * (($level - 1) ** 1.5)));
 
             // Determine career title at this level
@@ -44,18 +45,18 @@ final class LevelsSeeder extends Seeder
             // Coin reward scales with level milestones
             $coinReward = match (true) {
                 $level % 10 === 0 => 1000,
-                $level % 5 === 0  => 500,
-                default           => 200,
+                $level % 5 === 0 => 500,
+                default => 200,
             };
 
             Level::updateOrCreate(
                 ['level_number' => $level],
                 [
-                    'xp_required'      => $cumulative,
+                    'xp_required' => $cumulative,
                     'xp_to_next_level' => $xpToNext,
-                    'coin_reward'      => $coinReward,
-                    'career_title'     => $title,
-                    'unlocks'          => null,
+                    'coin_reward' => $coinReward,
+                    'career_title' => $title,
+                    'unlocks' => null,
                 ]
             );
         }

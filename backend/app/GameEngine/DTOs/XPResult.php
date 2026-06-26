@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\DTOs;
@@ -13,25 +14,25 @@ final readonly class XPResult
 {
     public function __construct(
         /** User who received the XP. */
-        public readonly int    $userId,
+        public readonly int $userId,
         /** XP awarded in this grant (after multipliers, capped if applicable). */
-        public readonly int    $amountGranted,
+        public readonly int $amountGranted,
         /** Total XP before this grant. */
-        public readonly int    $xpBefore,
+        public readonly int $xpBefore,
         /** Total XP after this grant. */
-        public readonly int    $xpAfter,
+        public readonly int $xpAfter,
         /** Level before this grant. */
-        public readonly int    $levelBefore,
+        public readonly int $levelBefore,
         /** Level after this grant (equal to levelBefore if no level-up occurred). */
-        public readonly int    $levelAfter,
+        public readonly int $levelAfter,
         /** True if levelAfter > levelBefore. */
-        public readonly bool   $didLevelUp,
+        public readonly bool $didLevelUp,
         /** XP source enum value (string backing value). */
         public readonly string $source,
         /** Idempotency key for this grant. */
         public readonly string $sourceId,
         /** True if the daily cap was hit and the grant was reduced or skipped. */
-        public readonly bool   $wasCapApplied,
+        public readonly bool $wasCapApplied,
     ) {}
 
     public function levelsGained(): int

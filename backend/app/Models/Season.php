@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -11,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 final class Season extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name', 'season_number', 'starts_at', 'ends_at', 'status', 'description', 'special_rules',
     ];
@@ -19,8 +23,8 @@ final class Season extends Model
     {
         return [
             'season_number' => 'integer',
-            'starts_at'     => 'date',
-            'ends_at'       => 'date',
+            'starts_at' => 'date',
+            'ends_at' => 'date',
             'special_rules' => 'array',
         ];
     }
@@ -40,7 +44,7 @@ final class Season extends Model
         return $this->hasMany(Leaderboard::class);
     }
 
-    public function scopeActive(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active');
     }

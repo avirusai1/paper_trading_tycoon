@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Contracts;
@@ -8,6 +9,9 @@ use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\RewardRequest;
 use App\RewardEngine\DTOs\StrategyResult;
 use App\RewardEngine\Enums\RewardType;
+use App\RewardEngine\Exceptions\RewardCalculationException;
+use App\RewardEngine\Exceptions\RewardDistributionException;
+use App\RewardEngine\Exceptions\RewardRollbackException;
 
 /**
  * Strategy contract for distributing a single reward type.
@@ -30,7 +34,7 @@ interface RewardStrategyContract
      * Calculate the final reward payload from the request and context.
      * No DB writes occur here — calculation only.
      *
-     * @throws \App\RewardEngine\Exceptions\RewardCalculationException
+     * @throws RewardCalculationException
      */
     public function calculate(RewardRequest $request, RewardContext $context): CalculatedReward;
 
@@ -38,7 +42,7 @@ interface RewardStrategyContract
      * Persist the calculated reward and return a typed result.
      * All DB writes occur here — idempotent via the request's idempotency key.
      *
-     * @throws \App\RewardEngine\Exceptions\RewardDistributionException
+     * @throws RewardDistributionException
      */
     public function distribute(CalculatedReward $reward, RewardContext $context): StrategyResult;
 
@@ -47,7 +51,7 @@ interface RewardStrategyContract
      * Issues a compensating transaction for ledger types; deletes records for
      * non-ledger types (inventory items, badges).
      *
-     * @throws \App\RewardEngine\Exceptions\RewardRollbackException
+     * @throws RewardRollbackException
      */
     public function rollback(string $idempotencyKey, RewardContext $context): StrategyResult;
 }

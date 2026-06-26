@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Contracts;
 
 use App\RewardEngine\Enums\RewardType;
+use App\RewardEngine\Exceptions\RewardEngineException;
 
 /**
  * Registry contract for strategy lookup by reward type.
@@ -16,7 +18,7 @@ interface RewardStrategyRegistryContract
     /**
      * Retrieve the strategy for the given reward type.
      *
-     * @throws \App\RewardEngine\Exceptions\RewardEngineException  If no strategy registered.
+     * @throws RewardEngineException If no strategy registered.
      */
     public function get(RewardType $type): RewardStrategyContract;
 

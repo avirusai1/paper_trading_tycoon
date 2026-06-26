@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Contracts;
 
 use App\RewardEngine\Contexts\RewardContext;
 use App\RewardEngine\DTOs\RewardRequest;
+use App\RewardEngine\Exceptions\RewardValidationException;
 
 /**
  * Contract for a single validation rule in the reward validator chain.
@@ -20,7 +22,7 @@ interface RewardValidatorContract
     /**
      * Validate the request against this rule.
      *
-     * @throws \App\RewardEngine\Exceptions\RewardValidationException  If validation fails.
+     * @throws RewardValidationException If validation fails.
      */
     public function validate(RewardRequest $request, RewardContext $context): void;
 }

@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
 use App\Enums\CoinTransactionSource;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -23,9 +25,9 @@ final class CoinTransaction extends Model
     protected function casts(): array
     {
         return [
-            'amount'        => 'integer',
+            'amount' => 'integer',
             'balance_after' => 'integer',
-            'source_type'   => CoinTransactionSource::class,
+            'source_type' => CoinTransactionSource::class,
         ];
     }
 
@@ -49,12 +51,12 @@ final class CoinTransaction extends Model
         return $this->amount < 0;
     }
 
-    public function scopeCredits(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeCredits(Builder $query): Builder
     {
         return $query->where('amount', '>', 0);
     }
 
-    public function scopeDebits(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeDebits(Builder $query): Builder
     {
         return $query->where('amount', '<', 0);
     }

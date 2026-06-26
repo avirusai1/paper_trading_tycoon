@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -21,11 +22,11 @@ final class Achievement extends Model
     protected function casts(): array
     {
         return [
-            'tier'          => AchievementTier::class,
-            'criteria'      => 'array',
-            'xp_reward'     => 'integer',
-            'coin_reward'   => 'integer',
-            'is_active'     => 'boolean',
+            'tier' => AchievementTier::class,
+            'criteria' => 'array',
+            'xp_reward' => 'integer',
+            'coin_reward' => 'integer',
+            'is_active' => 'boolean',
             'is_repeatable' => 'boolean',
         ];
     }

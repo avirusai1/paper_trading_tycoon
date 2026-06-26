@@ -1,22 +1,23 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\RewardEngine;
 
-use App\RewardEngine\Contracts\RewardValidatorContract;
+use App\RewardEngine\Actions\DistributeRewardAction;
+use App\RewardEngine\Actions\RecordRewardHistoryAction;
+use App\RewardEngine\Actions\RollbackRewardAction;
 use App\RewardEngine\Contexts\RewardContext;
+use App\RewardEngine\Contracts\RewardValidatorContract;
 use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\DistributionResult;
 use App\RewardEngine\DTOs\RewardRequest;
 use App\RewardEngine\Enums\RewardSource;
 use App\RewardEngine\Enums\RewardStatus;
 use App\RewardEngine\Enums\RewardType;
-use App\RewardEngine\Actions\DistributeRewardAction;
-use App\RewardEngine\Actions\RecordRewardHistoryAction;
-use App\RewardEngine\Actions\RollbackRewardAction;
-use App\RewardEngine\Pipelines\RewardPipeline;
-use App\RewardEngine\Exceptions\RewardValidationException;
 use App\RewardEngine\Enums\ValidationFailureReason;
+use App\RewardEngine\Exceptions\RewardValidationException;
+use App\RewardEngine\Pipelines\RewardPipeline;
 use Mockery;
 use Tests\TestCase;
 
@@ -37,8 +38,8 @@ class RewardPipelineTest extends TestCase
     {
         parent::setUp();
 
-        $this->distributeAction    = Mockery::mock(DistributeRewardAction::class);
-        $this->rollbackAction      = Mockery::mock(RollbackRewardAction::class);
+        $this->distributeAction = Mockery::mock(DistributeRewardAction::class);
+        $this->rollbackAction = Mockery::mock(RollbackRewardAction::class);
         $this->recordHistoryAction = Mockery::mock(RecordRewardHistoryAction::class);
     }
 
@@ -49,18 +50,18 @@ class RewardPipelineTest extends TestCase
         $context = $this->makeContext();
 
         $calculated = new CalculatedReward(
-            rewardType:     RewardType::Coins,
+            rewardType: RewardType::Coins,
             idempotencyKey: $request->idempotencyKey,
-            userId:         $request->userId,
-            finalCoins:     500,
+            userId: $request->userId,
+            finalCoins: 500,
         );
 
         $distributed = new DistributionResult(
-            rewardType:     RewardType::Coins,
-            status:         RewardStatus::Distributed,
+            rewardType: RewardType::Coins,
+            status: RewardStatus::Distributed,
             idempotencyKey: $request->idempotencyKey,
-            userId:         $request->userId,
-            coinsGranted:   500,
+            userId: $request->userId,
+            coinsGranted: 500,
         );
 
         $this->distributeAction->shouldReceive('calculateOnly')->once()->andReturn($calculated);
@@ -68,9 +69,9 @@ class RewardPipelineTest extends TestCase
         $this->recordHistoryAction->shouldReceive('execute')->once();
 
         $pipeline = new RewardPipeline(
-            validators:          [],
-            distributeAction:    $this->distributeAction,
-            rollbackAction:      $this->rollbackAction,
+            validators: [],
+            distributeAction: $this->distributeAction,
+            rollbackAction: $this->rollbackAction,
             recordHistoryAction: $this->recordHistoryAction,
         );
 
@@ -93,9 +94,9 @@ class RewardPipelineTest extends TestCase
         );
 
         $pipeline = new RewardPipeline(
-            validators:          [$validator],
-            distributeAction:    $this->distributeAction,
-            rollbackAction:      $this->rollbackAction,
+            validators: [$validator],
+            distributeAction: $this->distributeAction,
+            rollbackAction: $this->rollbackAction,
             recordHistoryAction: $this->recordHistoryAction,
         );
 
@@ -112,7 +113,7 @@ class RewardPipelineTest extends TestCase
         $request = $this->makeRequest();
         $context = $this->makeContext();
 
-        $first  = Mockery::mock(RewardValidatorContract::class);
+        $first = Mockery::mock(RewardValidatorContract::class);
         $second = Mockery::mock(RewardValidatorContract::class);
 
         $first->shouldReceive('validate')->once()->andThrow(
@@ -121,9 +122,9 @@ class RewardPipelineTest extends TestCase
         $second->shouldReceive('validate')->never();
 
         $pipeline = new RewardPipeline(
-            validators:          [$first, $second],
-            distributeAction:    $this->distributeAction,
-            rollbackAction:      $this->rollbackAction,
+            validators: [$first, $second],
+            distributeAction: $this->distributeAction,
+            rollbackAction: $this->rollbackAction,
             recordHistoryAction: $this->recordHistoryAction,
         );
 
@@ -136,25 +137,25 @@ class RewardPipelineTest extends TestCase
     public function dry_run_does_not_call_record_history(): void
     {
         $request = RewardRequest::make(
-            userId:     1,
+            userId: 1,
             rewardType: RewardType::Coins,
-            source:     RewardSource::Mission,
-            sourceId:   '1',
-            dryRun:     true,
+            source: RewardSource::Mission,
+            sourceId: '1',
+            dryRun: true,
         );
         $context = $this->makeContext();
 
         $calculated = new CalculatedReward(
-            rewardType:     RewardType::Coins,
+            rewardType: RewardType::Coins,
             idempotencyKey: $request->idempotencyKey,
-            userId:         1,
-            isDryRun:       true,
+            userId: 1,
+            isDryRun: true,
         );
         $distributed = new DistributionResult(
-            rewardType:     RewardType::Coins,
-            status:         RewardStatus::Validated,
+            rewardType: RewardType::Coins,
+            status: RewardStatus::Validated,
             idempotencyKey: $request->idempotencyKey,
-            userId:         1,
+            userId: 1,
         );
 
         $this->distributeAction->shouldReceive('calculateOnly')->once()->andReturn($calculated);
@@ -162,9 +163,9 @@ class RewardPipelineTest extends TestCase
         $this->recordHistoryAction->shouldReceive('execute')->never();
 
         $pipeline = new RewardPipeline(
-            validators:          [],
-            distributeAction:    $this->distributeAction,
-            rollbackAction:      $this->rollbackAction,
+            validators: [],
+            distributeAction: $this->distributeAction,
+            rollbackAction: $this->rollbackAction,
             recordHistoryAction: $this->recordHistoryAction,
         );
 
@@ -178,10 +179,10 @@ class RewardPipelineTest extends TestCase
     private function makeRequest(): RewardRequest
     {
         return RewardRequest::make(
-            userId:     1,
+            userId: 1,
             rewardType: RewardType::Coins,
-            source:     RewardSource::Mission,
-            sourceId:   '42',
+            source: RewardSource::Mission,
+            sourceId: '42',
         );
     }
 

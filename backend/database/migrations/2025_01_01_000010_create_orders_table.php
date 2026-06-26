@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
@@ -23,7 +24,7 @@ return new class extends Migration
             $table->enum('side', ['buy', 'sell']);
             $table->enum('order_type', ['market', 'limit', 'stop', 'stop_limit', 'bracket'])->default('market');
             $table->enum('status', [
-                'pending', 'open', 'partially_filled', 'filled', 'cancelled', 'rejected', 'expired'
+                'pending', 'open', 'partially_filled', 'filled', 'cancelled', 'rejected', 'expired',
             ])->default('pending')->index();
             $table->unsignedInteger('quantity')->comment('Total quantity requested');
             $table->unsignedInteger('filled_quantity')->default(0)->comment('Quantity executed so far');

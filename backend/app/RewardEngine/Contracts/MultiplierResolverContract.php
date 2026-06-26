@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Contracts;
@@ -27,7 +28,7 @@ interface MultiplierResolverContract
      * Return the individual active multipliers broken down by type.
      * Used for audit logging and the rewards breakdown in API responses.
      *
-     * @return array<string, float>  key = MultiplierType::value, value = multiplier
+     * @return array<string, float> key = MultiplierType::value, value = multiplier
      */
     public function breakdown(RewardRequest $request, RewardContext $context): array;
 }

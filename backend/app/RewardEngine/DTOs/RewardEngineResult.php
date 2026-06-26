@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\DTOs;
@@ -19,17 +20,17 @@ final readonly class RewardEngineResult
      * @param  DistributionResult[]  $distributionResults
      */
     public function __construct(
-        public readonly string       $idempotencyKey,
-        public readonly int          $userId,
+        public readonly string $idempotencyKey,
+        public readonly int $userId,
         public readonly RewardStatus $status,
-        public readonly RewardType   $rewardType,
-        public readonly int          $totalXPGranted,
-        public readonly int          $totalCoinsGranted,
-        public readonly array        $distributionResults,
-        public readonly array        $extras             = [],
-        public readonly bool         $wasIdempotent      = false,
-        public readonly ?string      $failureReason      = null,
-        public readonly float        $processingTimeMs   = 0.0,
+        public readonly RewardType $rewardType,
+        public readonly int $totalXPGranted,
+        public readonly int $totalCoinsGranted,
+        public readonly array $distributionResults,
+        public readonly array $extras = [],
+        public readonly bool $wasIdempotent = false,
+        public readonly ?string $failureReason = null,
+        public readonly float $processingTimeMs = 0.0,
     ) {}
 
     public function succeeded(): bool

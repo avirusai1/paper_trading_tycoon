@@ -40,7 +40,7 @@ final class IdempotencyMiddleware
         }
 
         $userId = $request->user()?->id ?? 'guest';
-        $cacheKey = self::CACHE_PREFIX . $userId . '_' . $key;
+        $cacheKey = self::CACHE_PREFIX.$userId.'_'.$key;
 
         // Return cached response for duplicate requests within TTL window.
         if (Cache::has($cacheKey)) {

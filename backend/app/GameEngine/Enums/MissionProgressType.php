@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Enums;
@@ -13,11 +14,11 @@ namespace App\GameEngine\Enums;
  */
 enum MissionProgressType: string
 {
-    case Trade      = 'trade';
-    case BuyTrade   = 'trade_buy';
-    case SellTrade  = 'trade_sell';
-    case Login      = 'login';
-    case Referral   = 'referral';
-    case Portfolio  = 'portfolio';
-    case Generic    = 'generic';
+    case Trade = 'trade';
+    case BuyTrade = 'trade_buy';
+    case SellTrade = 'trade_sell';
+    case Login = 'login';
+    case Referral = 'referral';
+    case Portfolio = 'portfolio';
+    case Generic = 'generic';
 }

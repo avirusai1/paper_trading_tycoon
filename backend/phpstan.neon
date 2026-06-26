@@ -14,5 +14,4 @@ parameters:
         # Laravel magic methods are handled by Larastan extensions.
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
         - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model#'
-    checkMissingIterableValueType: false
     treatPhpDocTypesAsCertain: false

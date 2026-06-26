@@ -21,12 +21,12 @@ enum LeagueTier: string
      */
     public function rank(): int
     {
-        return match($this) {
-            self::Bronze   => 1,
-            self::Silver   => 2,
-            self::Gold     => 3,
+        return match ($this) {
+            self::Bronze => 1,
+            self::Silver => 2,
+            self::Gold => 3,
             self::Platinum => 4,
-            self::Diamond  => 5,
+            self::Diamond => 5,
         };
     }
 
@@ -35,12 +35,12 @@ enum LeagueTier: string
      */
     public function next(): ?self
     {
-        return match($this) {
-            self::Bronze   => self::Silver,
-            self::Silver   => self::Gold,
-            self::Gold     => self::Platinum,
+        return match ($this) {
+            self::Bronze => self::Silver,
+            self::Silver => self::Gold,
+            self::Gold => self::Platinum,
             self::Platinum => self::Diamond,
-            self::Diamond  => null,
+            self::Diamond => null,
         };
     }
 
@@ -49,12 +49,12 @@ enum LeagueTier: string
      */
     public function previous(): ?self
     {
-        return match($this) {
-            self::Bronze   => null,
-            self::Silver   => self::Bronze,
-            self::Gold     => self::Silver,
+        return match ($this) {
+            self::Bronze => null,
+            self::Silver => self::Bronze,
+            self::Gold => self::Silver,
             self::Platinum => self::Gold,
-            self::Diamond  => self::Platinum,
+            self::Diamond => self::Platinum,
         };
     }
 }

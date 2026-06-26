@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Calculators;
@@ -33,9 +34,9 @@ final class SeasonBonusCalculator
      */
     public function calculate(RewardRequest $request, RewardContext $context): CalculatedReward
     {
-        $seasonId   = (int) $request->meta('season_id', 0);
-        $finalRank  = (int) $request->meta('final_rank', 0);
-        $leagueId   = (int) $request->meta('league_id', 0);
+        $seasonId = (int) $request->meta('season_id', 0);
+        $finalRank = (int) $request->meta('final_rank', 0);
+        $leagueId = (int) $request->meta('league_id', 0);
 
         if ($seasonId === 0 || $finalRank === 0 || $leagueId === 0) {
             throw RewardCalculationException::missingRule('season_bonus requires season_id, final_rank, league_id in metadata');
@@ -52,29 +53,29 @@ final class SeasonBonusCalculator
         if ($seasonReward === null) {
             // No reward configured for this rank band — zero reward (not an error)
             return new CalculatedReward(
-                rewardType:     RewardType::SeasonReward,
+                rewardType: RewardType::SeasonReward,
                 idempotencyKey: $request->idempotencyKey,
-                userId:         $request->userId,
-                isDryRun:       $request->dryRun,
+                userId: $request->userId,
+                isDryRun: $request->dryRun,
             );
         }
 
         return new CalculatedReward(
-            rewardType:     RewardType::SeasonReward,
+            rewardType: RewardType::SeasonReward,
             idempotencyKey: $request->idempotencyKey,
-            userId:         $request->userId,
-            baseXP:         (int) $seasonReward->xp_reward,
-            finalXP:        (int) $seasonReward->xp_reward,
-            baseCoins:      (int) $seasonReward->coin_reward,
-            finalCoins:     (int) $seasonReward->coin_reward,
-            extras:         [
-                'title_reward'  => $seasonReward->title_reward,
+            userId: $request->userId,
+            baseXP: (int) $seasonReward->xp_reward,
+            finalXP: (int) $seasonReward->xp_reward,
+            baseCoins: (int) $seasonReward->coin_reward,
+            finalCoins: (int) $seasonReward->coin_reward,
+            extras: [
+                'title_reward' => $seasonReward->title_reward,
                 'extra_rewards' => $seasonReward->extra_rewards ?? [],
-                'season_id'     => $seasonId,
-                'league_id'     => $leagueId,
-                'rank'          => $finalRank,
+                'season_id' => $seasonId,
+                'league_id' => $leagueId,
+                'rank' => $finalRank,
             ],
-            isDryRun:       $request->dryRun,
+            isDryRun: $request->dryRun,
         );
     }
 }

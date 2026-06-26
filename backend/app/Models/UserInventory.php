@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,6 +13,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class UserInventory extends Model
 {
+    use HasFactory;
+
+    protected $table = 'user_inventory';
     protected $fillable = [
         'user_id', 'store_item_id', 'quantity', 'is_equipped',
         'metadata', 'expires_at', 'purchased_at',
@@ -19,10 +24,10 @@ final class UserInventory extends Model
     protected function casts(): array
     {
         return [
-            'quantity'     => 'integer',
-            'is_equipped'  => 'boolean',
-            'metadata'     => 'array',
-            'expires_at'   => 'datetime',
+            'quantity' => 'integer',
+            'is_equipped' => 'boolean',
+            'metadata' => 'array',
+            'expires_at' => 'datetime',
             'purchased_at' => 'datetime',
         ];
     }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -24,13 +25,13 @@ final class UserProfile extends Model
     protected function casts(): array
     {
         return [
-            'date_of_birth'                => 'date',
-            'last_active_at'               => 'datetime',
-            'last_login_at'                => 'datetime',
-            'last_login_date'              => 'date',
-            'login_streak'                 => 'integer',
-            'total_trades'                 => 'integer',
-            'total_portfolio_value_paise'  => 'integer',
+            'date_of_birth' => 'date',
+            'last_active_at' => 'datetime',
+            'last_login_at' => 'datetime',
+            'last_login_date' => 'date',
+            'login_streak' => 'integer',
+            'total_trades' => 'integer',
+            'total_portfolio_value_paise' => 'integer',
         ];
     }
 

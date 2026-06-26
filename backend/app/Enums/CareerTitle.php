@@ -13,14 +13,14 @@ namespace App\Enums;
  */
 enum CareerTitle: string
 {
-    case StudentTrader      = 'Student Trader';      // Levels 1–5
-    case InternTrader       = 'Intern Trader';       // Levels 6–10
-    case JuniorTrader       = 'Junior Trader';       // Levels 11–15
-    case RetailTrader       = 'Retail Trader';       // Levels 16–20
+    case StudentTrader = 'Student Trader';      // Levels 1–5
+    case InternTrader = 'Intern Trader';       // Levels 6–10
+    case JuniorTrader = 'Junior Trader';       // Levels 11–15
+    case RetailTrader = 'Retail Trader';       // Levels 16–20
     case ProfessionalTrader = 'Professional Trader'; // Levels 21–30
-    case SeniorTrader       = 'Senior Trader';       // Levels 31–40
-    case FundManager        = 'Fund Manager';        // Levels 41–50
-    case PortfolioManager   = 'Portfolio Manager';   // Levels 51–60
-    case HedgeFundManager   = 'Hedge Fund Manager';  // Levels 61–75
-    case MarketLegend       = 'Market Legend';       // Levels 76+
+    case SeniorTrader = 'Senior Trader';       // Levels 31–40
+    case FundManager = 'Fund Manager';        // Levels 41–50
+    case PortfolioManager = 'Portfolio Manager';   // Levels 51–60
+    case HedgeFundManager = 'Hedge Fund Manager';  // Levels 61–75
+    case MarketLegend = 'Market Legend';       // Levels 76+
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Actions;
@@ -8,7 +9,6 @@ use App\RewardEngine\Contracts\RewardStrategyRegistryContract;
 use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\DistributionResult;
 use App\RewardEngine\DTOs\RewardRequest;
-use App\RewardEngine\Enums\RewardStatus;
 use App\RewardEngine\Exceptions\RewardDistributionException;
 use App\RewardEngine\Exceptions\RewardEngineException;
 use Illuminate\Support\Facades\Log;
@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
  *
  * Returns DistributionResult. Throws on hard failures.
  */
-final class DistributeRewardAction
+class DistributeRewardAction
 {
     public function __construct(
         private readonly RewardStrategyRegistryContract $registry,
@@ -37,11 +37,11 @@ final class DistributeRewardAction
         $strategy = $this->registry->get($request->rewardType);
 
         Log::info('[RewardEngine:DistributeAction] Distributing', [
-            'user_id'     => $request->userId,
+            'user_id' => $request->userId,
             'reward_type' => $request->rewardType->value,
-            'source'      => $request->source->value,
-            'key'         => $request->idempotencyKey,
-            'dry_run'     => $request->dryRun,
+            'source' => $request->source->value,
+            'key' => $request->idempotencyKey,
+            'dry_run' => $request->dryRun,
         ]);
 
         // Calculate
@@ -51,15 +51,15 @@ final class DistributeRewardAction
         $strategyResult = $strategy->distribute($calculated, $context);
 
         return new DistributionResult(
-            rewardType:      $strategyResult->rewardType,
-            status:          $strategyResult->status,
-            idempotencyKey:  $strategyResult->idempotencyKey,
-            userId:          $strategyResult->userId,
-            xpGranted:       $strategyResult->xpGranted,
-            coinsGranted:    $strategyResult->coinsGranted,
-            extras:          $strategyResult->extras,
-            wasIdempotent:   $strategyResult->wasIdempotent ?? false,
-            failureReason:   $strategyResult->failureReason,
+            rewardType: $strategyResult->rewardType,
+            status: $strategyResult->status,
+            idempotencyKey: $strategyResult->idempotencyKey,
+            userId: $strategyResult->userId,
+            xpGranted: $strategyResult->xpGranted,
+            coinsGranted: $strategyResult->coinsGranted,
+            extras: $strategyResult->extras,
+            wasIdempotent: $strategyResult->wasIdempotent ?? false,
+            failureReason: $strategyResult->failureReason,
         );
     }
 

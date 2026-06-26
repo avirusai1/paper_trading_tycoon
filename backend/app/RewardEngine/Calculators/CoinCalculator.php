@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Calculators;
 
 use App\GameEngine\Contracts\GameRuleProviderContract;
 use App\RewardEngine\Contexts\RewardContext;
+use App\RewardEngine\Contracts\MultiplierResolverContract;
 use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\RewardRequest;
-use App\RewardEngine\Enums\MultiplierType;
 use App\RewardEngine\Enums\RewardType;
 use App\RewardEngine\Exceptions\RewardCalculationException;
 
@@ -26,7 +27,7 @@ final class CoinCalculator
 {
     public function __construct(
         private readonly GameRuleProviderContract $rules,
-        private readonly MultiplierResolver       $multiplierResolver,
+        private readonly MultiplierResolverContract $multiplierResolver,
     ) {}
 
     /**
@@ -38,7 +39,7 @@ final class CoinCalculator
         if ($request->overrideAmount !== null) {
             $baseCoins = $request->overrideAmount;
         } else {
-            $ruleKey   = 'rewards.coins.' . $request->source->value;
+            $ruleKey = 'rewards.coins.'.$request->source->value;
             $baseCoins = $this->rules->getInt($ruleKey, -1);
 
             if ($baseCoins < 0) {
@@ -60,14 +61,14 @@ final class CoinCalculator
         }
 
         return new CalculatedReward(
-            rewardType:          RewardType::Coins,
-            idempotencyKey:      $request->idempotencyKey,
-            userId:              $request->userId,
-            baseCoins:           $baseCoins,
-            finalCoins:          $finalCoins,
-            totalMultiplier:     $totalMultiplier,
+            rewardType: RewardType::Coins,
+            idempotencyKey: $request->idempotencyKey,
+            userId: $request->userId,
+            baseCoins: $baseCoins,
+            finalCoins: $finalCoins,
+            totalMultiplier: $totalMultiplier,
             multiplierBreakdown: $multiplierBreakdown,
-            isDryRun:            $request->dryRun,
+            isDryRun: $request->dryRun,
         );
     }
 }

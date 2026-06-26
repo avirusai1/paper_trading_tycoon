@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -18,11 +19,11 @@ final class SubscriptionPlan extends Model
     protected function casts(): array
     {
         return [
-            'price_paise'   => 'integer',
+            'price_paise' => 'integer',
             'duration_days' => 'integer',
-            'features'      => 'array',
-            'is_active'     => 'boolean',
-            'trial_days'    => 'integer',
+            'features' => 'array',
+            'is_active' => 'boolean',
+            'trial_days' => 'integer',
         ];
     }
 

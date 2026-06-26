@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Actions;
@@ -44,14 +45,14 @@ final class GrantMissionProgressAction
 
             $result = DB::transaction(function () use ($userMission, $increment): MissionResult {
                 /** @var UserMission $locked */
-                $locked         = UserMission::lockForUpdate()->findOrFail($userMission->id);
+                $locked = UserMission::lockForUpdate()->findOrFail($userMission->id);
                 $progressBefore = $locked->progress;
-                $progressAfter  = min($locked->target, $progressBefore + $increment);
-                $justCompleted  = $progressAfter >= $locked->target && $progressBefore < $locked->target;
+                $progressAfter = min($locked->target, $progressBefore + $increment);
+                $justCompleted = $progressAfter >= $locked->target && $progressBefore < $locked->target;
 
                 $locked->update([
-                    'progress'     => $progressAfter,
-                    'status'       => $justCompleted ? 'completed' : $locked->status,
+                    'progress' => $progressAfter,
+                    'status' => $justCompleted ? 'completed' : $locked->status,
                     'completed_at' => $justCompleted ? now() : $locked->completed_at,
                 ]);
 
@@ -59,16 +60,16 @@ final class GrantMissionProgressAction
 
                 return new MissionResult(
                     userMissionId: $locked->id,
-                    missionId:     $locked->mission_id,
-                    userId:        $locked->user_id,
-                    missionKey:    $mission->key,
+                    missionId: $locked->mission_id,
+                    userId: $locked->user_id,
+                    missionKey: $mission->key,
                     progressBefore: $progressBefore,
                     progressAfter: $progressAfter,
-                    target:        $locked->target,
+                    target: $locked->target,
                     justCompleted: $justCompleted,
                     rewardClaimed: false,
-                    xpReward:      $mission->xp_reward,
-                    coinReward:    $mission->coin_reward,
+                    xpReward: $mission->xp_reward,
+                    coinReward: $mission->coin_reward,
                 );
             });
 
@@ -101,7 +102,7 @@ final class GrantMissionProgressAction
         }
 
         $userMission->update([
-            'status'     => 'claimed',
+            'status' => 'claimed',
             'claimed_at' => now(),
         ]);
     }

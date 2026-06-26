@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Events;
@@ -15,12 +16,12 @@ use App\RewardEngine\Enums\RewardType;
 final class RewardGranted extends RewardEngineEvent
 {
     public function __construct(
-        public readonly int              $userId,
-        public readonly RewardType       $rewardType,
-        public readonly RewardSource     $source,
-        public readonly string           $idempotencyKey,
-        public readonly int              $xpGranted,
-        public readonly int              $coinsGranted,
+        public readonly int $userId,
+        public readonly RewardType $rewardType,
+        public readonly RewardSource $source,
+        public readonly string $idempotencyKey,
+        public readonly int $xpGranted,
+        public readonly int $coinsGranted,
         public readonly RewardEngineResult $result,
     ) {
         parent::__construct();

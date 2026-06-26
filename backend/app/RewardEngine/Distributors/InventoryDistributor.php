@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Distributors;
@@ -10,6 +11,7 @@ use App\RewardEngine\Contracts\RewardDistributorContract;
 use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\DistributionResult;
 use App\RewardEngine\Enums\RewardStatus;
+use App\RewardEngine\Enums\RewardType;
 use App\RewardEngine\Exceptions\RewardDistributionException;
 use Illuminate\Support\Facades\Log;
 
@@ -25,10 +27,10 @@ final class InventoryDistributor implements RewardDistributorContract
     {
         if ($reward->isDryRun) {
             return new DistributionResult(
-                rewardType:     $reward->rewardType,
-                status:         RewardStatus::Skipped,
+                rewardType: $reward->rewardType,
+                status: RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
+                userId: $reward->userId,
             );
         }
 
@@ -56,27 +58,27 @@ final class InventoryDistributor implements RewardDistributorContract
         }
 
         $inventory = UserInventory::create([
-            'user_id'       => $reward->userId,
+            'user_id' => $reward->userId,
             'store_item_id' => $storeItemId,
-            'quantity'      => 1,
-            'is_equipped'   => false,
-            'metadata'      => ['reward_key' => $reward->idempotencyKey],
-            'expires_at'    => $reward->extras['expires_at'] ?? null,
-            'purchased_at'  => now(),
+            'quantity' => 1,
+            'is_equipped' => false,
+            'metadata' => ['reward_key' => $reward->idempotencyKey],
+            'expires_at' => $reward->extras['expires_at'] ?? null,
+            'purchased_at' => now(),
         ]);
 
         Log::info('[RewardEngine:InventoryDistributor] Item granted', [
-            'user_id'       => $reward->userId,
+            'user_id' => $reward->userId,
             'store_item_id' => $storeItemId,
-            'inventory_id'  => $inventory->id,
+            'inventory_id' => $inventory->id,
         ]);
 
         return new DistributionResult(
-            rewardType:     $reward->rewardType,
-            status:         RewardStatus::Distributed,
+            rewardType: $reward->rewardType,
+            status: RewardStatus::Distributed,
             idempotencyKey: $reward->idempotencyKey,
-            userId:         $reward->userId,
-            extras:         ['inventory_id' => $inventory->id, 'store_item_id' => $storeItemId],
+            userId: $reward->userId,
+            extras: ['inventory_id' => $inventory->id, 'store_item_id' => $storeItemId],
         );
     }
 
@@ -88,10 +90,10 @@ final class InventoryDistributor implements RewardDistributorContract
             ->delete();
 
         return new DistributionResult(
-            rewardType:     \App\RewardEngine\Enums\RewardType::InventoryItem,
-            status:         RewardStatus::RolledBack,
+            rewardType: RewardType::InventoryItem,
+            status: RewardStatus::RolledBack,
             idempotencyKey: $idempotencyKey,
-            userId:         $context->userId(),
+            userId: $context->userId(),
         );
     }
 }

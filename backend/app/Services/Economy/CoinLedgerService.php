@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Economy;
@@ -9,6 +10,7 @@ use App\GameEngine\Exceptions\RewardException;
 use App\Models\CoinTransaction;
 use App\Models\Wallet;
 use App\Services\BaseService;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -23,36 +25,36 @@ use Illuminate\Support\Facades\DB;
 final class CoinLedgerService extends BaseService implements CoinLedgerContract
 {
     public function credit(
-        int                   $userId,
-        int                   $amount,
+        int $userId,
+        int $amount,
         CoinTransactionSource $source,
-        string                $sourceId,
-        ?string               $description = null,
+        string $sourceId,
+        ?string $description = null,
     ): int {
         if ($amount <= 0) {
             throw RewardException::negativeAmount($amount);
         }
 
         return $this->transactional(function () use ($userId, $amount, $source, $sourceId, $description): int {
-            $wallet       = Wallet::where('user_id', $userId)->lockForUpdate()->firstOrFail();
+            $wallet = Wallet::where('user_id', $userId)->lockForUpdate()->firstOrFail();
             $balanceAfter = $wallet->coin_balance + $amount;
 
             try {
                 CoinTransaction::create([
-                    'user_id'       => $userId,
-                    'amount'        => $amount,
-                    'source_type'   => $source,
-                    'source_id'     => $sourceId,
+                    'user_id' => $userId,
+                    'amount' => $amount,
+                    'source_type' => $source,
+                    'source_id' => $sourceId,
                     'balance_after' => $balanceAfter,
-                    'description'   => $description,
+                    'description' => $description,
                 ]);
-            } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+            } catch (UniqueConstraintViolationException) {
                 // Already credited — return current balance
                 return $wallet->coin_balance;
             }
 
             $wallet->update([
-                'coin_balance'            => $balanceAfter,
+                'coin_balance' => $balanceAfter,
                 'coin_balance_updated_at' => now(),
             ]);
 
@@ -61,11 +63,11 @@ final class CoinLedgerService extends BaseService implements CoinLedgerContract
     }
 
     public function debit(
-        int                   $userId,
-        int                   $amount,
+        int $userId,
+        int $amount,
         CoinTransactionSource $source,
-        string                $sourceId,
-        ?string               $description = null,
+        string $sourceId,
+        ?string $description = null,
     ): int {
         if ($amount <= 0) {
             throw RewardException::negativeAmount($amount);
@@ -81,16 +83,16 @@ final class CoinLedgerService extends BaseService implements CoinLedgerContract
             $balanceAfter = $wallet->coin_balance - $amount;
 
             CoinTransaction::create([
-                'user_id'       => $userId,
-                'amount'        => -$amount,
-                'source_type'   => $source,
-                'source_id'     => $sourceId,
+                'user_id' => $userId,
+                'amount' => -$amount,
+                'source_type' => $source,
+                'source_id' => $sourceId,
                 'balance_after' => $balanceAfter,
-                'description'   => $description,
+                'description' => $description,
             ]);
 
             $wallet->update([
-                'coin_balance'            => $balanceAfter,
+                'coin_balance' => $balanceAfter,
                 'coin_balance_updated_at' => now(),
             ]);
 

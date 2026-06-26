@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Enums;
@@ -9,16 +10,16 @@ namespace App\GameEngine\Enums;
  */
 enum PlayerState: string
 {
-    case Active          = 'active';
-    case ActivePremium   = 'active_premium';
-    case Suspended       = 'suspended';
-    case Banned          = 'banned';
+    case Active = 'active';
+    case ActivePremium = 'active_premium';
+    case Suspended = 'suspended';
+    case Banned = 'banned';
 
     public function canParticipate(): bool
     {
         return match ($this) {
             self::Active, self::ActivePremium => true,
-            default                           => false,
+            default => false,
         };
     }
 

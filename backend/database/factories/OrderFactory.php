@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Factories;
@@ -17,18 +18,18 @@ final class OrderFactory extends Factory
     public function definition(): array
     {
         $quantity = $this->faker->numberBetween(1, 100);
-        $price    = $this->faker->numberBetween(10000, 500000); // 100–5000 rupees in paise
+        $price = $this->faker->numberBetween(10000, 500000); // 100–5000 rupees in paise
 
         return [
-            'user_id'                  => User::factory(),
-            'stock_id'                 => Stock::factory(),
-            'symbol'                   => $this->faker->bothify('??###'),
-            'idempotency_key'          => Str::uuid()->toString(),
-            'side'                     => $this->faker->randomElement(OrderSide::cases()),
-            'order_type'               => 'market',
-            'status'                   => 'filled',
-            'quantity'                 => $quantity,
-            'filled_quantity'          => $quantity,
+            'user_id' => User::factory(),
+            'stock_id' => Stock::factory(),
+            'symbol' => $this->faker->bothify('??###'),
+            'idempotency_key' => Str::uuid()->toString(),
+            'side' => $this->faker->randomElement(OrderSide::cases()),
+            'order_type' => 'market',
+            'status' => 'filled',
+            'quantity' => $quantity,
+            'filled_quantity' => $quantity,
             'average_fill_price_paise' => $price,
         ];
     }

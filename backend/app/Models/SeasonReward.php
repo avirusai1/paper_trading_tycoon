@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -19,10 +20,10 @@ final class SeasonReward extends Model
     protected function casts(): array
     {
         return [
-            'rank_from'     => 'integer',
-            'rank_to'       => 'integer',
-            'coin_reward'   => 'integer',
-            'xp_reward'     => 'integer',
+            'rank_from' => 'integer',
+            'rank_to' => 'integer',
+            'coin_reward' => 'integer',
+            'xp_reward' => 'integer',
             'extra_rewards' => 'array',
         ];
     }

@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Strategies;
 
 use App\Models\CareerTitle;
-use App\Models\UserProfile;
 use App\RewardEngine\Contexts\RewardContext;
 use App\RewardEngine\Contracts\RewardStrategyContract;
 use App\RewardEngine\DTOs\CalculatedReward;
@@ -37,11 +37,11 @@ final class CareerRewardStrategy implements RewardStrategyContract
             ?? null;
 
         return new CalculatedReward(
-            rewardType:     RewardType::CareerUnlock,
+            rewardType: RewardType::CareerUnlock,
             idempotencyKey: $request->idempotencyKey,
-            userId:         $request->userId,
-            extras:         ['career_title' => $title],
-            isDryRun:       $request->dryRun,
+            userId: $request->userId,
+            extras: ['career_title' => $title],
+            isDryRun: $request->dryRun,
         );
     }
 
@@ -49,10 +49,10 @@ final class CareerRewardStrategy implements RewardStrategyContract
     {
         if ($reward->isDryRun) {
             return new StrategyResult(
-                rewardType:     $this->handles(),
-                status:         RewardStatus::Validated,
+                rewardType: $this->handles(),
+                status: RewardStatus::Validated,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
+                userId: $reward->userId,
             );
         }
 
@@ -61,10 +61,10 @@ final class CareerRewardStrategy implements RewardStrategyContract
         if ($title === null) {
             // No title for this level — not an error, just skip
             return new StrategyResult(
-                rewardType:     $this->handles(),
-                status:         RewardStatus::Skipped,
+                rewardType: $this->handles(),
+                status: RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
+                userId: $reward->userId,
             );
         }
 
@@ -73,15 +73,15 @@ final class CareerRewardStrategy implements RewardStrategyContract
 
         Log::info('[RewardEngine:CareerStrategy] Career title unlocked', [
             'user_id' => $reward->userId,
-            'title'   => $title,
+            'title' => $title,
         ]);
 
         return new StrategyResult(
-            rewardType:     $this->handles(),
-            status:         RewardStatus::Distributed,
+            rewardType: $this->handles(),
+            status: RewardStatus::Distributed,
             idempotencyKey: $reward->idempotencyKey,
-            userId:         $reward->userId,
-            extras:         ['career_title' => $title],
+            userId: $reward->userId,
+            extras: ['career_title' => $title],
         );
     }
 
@@ -89,7 +89,7 @@ final class CareerRewardStrategy implements RewardStrategyContract
     {
         // Career titles are not revoked on rollback — only forward progression
         Log::info('[RewardEngine:CareerStrategy] Rollback requested — career titles are non-reversible', [
-            'user_id'         => $context->userId(),
+            'user_id' => $context->userId(),
             'idempotency_key' => $idempotencyKey,
         ]);
 

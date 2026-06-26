@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Seeders;
@@ -21,7 +22,7 @@ final class FeatureFlagsSeeder extends Seeder
             ['key' => 'ai_coach',          'name' => 'AI Trading Coach',        'group' => 'ai',            'description' => 'AI-powered trading suggestions'],
             ['key' => 'copy_trading',      'name' => 'Copy Trading',            'group' => 'social',        'description' => 'Copy trades from top players'],
             ['key' => 'tournaments',       'name' => 'Tournaments',             'group' => 'game',          'description' => 'Short-duration trading tournaments'],
-            ['key' => 'advanced_analytics','name' => 'Advanced Analytics',      'group' => 'analytics',     'description' => 'Advanced portfolio analytics charts'],
+            ['key' => 'advanced_analytics', 'name' => 'Advanced Analytics',      'group' => 'analytics',     'description' => 'Advanced portfolio analytics charts'],
             ['key' => 'social_feed',       'name' => 'Social Feed',             'group' => 'social',        'description' => 'Activity feed and social interactions'],
             ['key' => 'market_news',       'name' => 'Market News',             'group' => 'market',        'description' => 'Curated market news in-app'],
             ['key' => 'ipo_tracking',      'name' => 'IPO Tracking',            'group' => 'market',        'description' => 'Upcoming IPO information'],

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Seeders;
@@ -21,11 +22,11 @@ final class StoreItemsSeeder extends Seeder
             ['category' => 'hints',     'key' => 'stock_signal',      'name' => 'Stock Signal Hint',       'coin_price' => 150, 'item_type' => 'hint',      'required_level' => 5,  'effects' => ['hint_type' => 'stock_signal']],
             // Avatar Frames
             ['category' => 'avatar_frames', 'key' => 'frame_gold',    'name' => 'Gold Frame',              'coin_price' => 500, 'item_type' => 'avatar_frame', 'required_level' => 1, 'effects' => []],
-            ['category' => 'avatar_frames', 'key' => 'frame_diamond', 'name' => 'Diamond Frame',           'coin_price' => 2000,'item_type' => 'avatar_frame', 'required_level' => 30,'effects' => [], 'is_premium_only' => true],
+            ['category' => 'avatar_frames', 'key' => 'frame_diamond', 'name' => 'Diamond Frame',           'coin_price' => 2000, 'item_type' => 'avatar_frame', 'required_level' => 30, 'effects' => [], 'is_premium_only' => true],
             // Profile Badges
             ['category' => 'profile_badges', 'key' => 'badge_bull',   'name' => 'Bull Badge',              'coin_price' => 300, 'item_type' => 'profile_badge', 'required_level' => 1,  'effects' => []],
             ['category' => 'profile_badges', 'key' => 'badge_bear',   'name' => 'Bear Badge',              'coin_price' => 300, 'item_type' => 'profile_badge', 'required_level' => 1,  'effects' => []],
-            ['category' => 'profile_badges', 'key' => 'badge_legend', 'name' => 'Legend Badge',            'coin_price' => 5000,'item_type' => 'profile_badge', 'required_level' => 76, 'effects' => []],
+            ['category' => 'profile_badges', 'key' => 'badge_legend', 'name' => 'Legend Badge',            'coin_price' => 5000, 'item_type' => 'profile_badge', 'required_level' => 76, 'effects' => []],
         ];
 
         foreach ($items as $item) {
@@ -35,14 +36,14 @@ final class StoreItemsSeeder extends Seeder
             }
             StoreItem::updateOrCreate(['key' => $item['key']], [
                 'store_category_id' => $category->id,
-                'name'              => $item['name'],
-                'description'       => $item['name'],
-                'coin_price'        => $item['coin_price'],
-                'item_type'         => $item['item_type'],
-                'effects'           => $item['effects'],
-                'required_level'    => $item['required_level'],
-                'is_premium_only'   => $item['is_premium_only'] ?? false,
-                'is_active'         => true,
+                'name' => $item['name'],
+                'description' => $item['name'],
+                'coin_price' => $item['coin_price'],
+                'item_type' => $item['item_type'],
+                'effects' => $item['effects'],
+                'required_level' => $item['required_level'],
+                'is_premium_only' => $item['is_premium_only'] ?? false,
+                'is_active' => true,
             ]);
         }
     }

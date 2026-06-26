@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Contracts;
 
 use App\RewardEngine\Contexts\RewardContext;
 use App\RewardEngine\DTOs\RewardRequest;
+use App\RewardEngine\Exceptions\RewardEngineException;
 
 /**
  * Contract for assembling a RewardContext from a RewardRequest.
@@ -18,7 +20,7 @@ use App\RewardEngine\DTOs\RewardRequest;
 interface RewardContextBuilderContract
 {
     /**
-     * @throws \App\RewardEngine\Exceptions\RewardEngineException  If user not found.
+     * @throws RewardEngineException If user not found.
      */
     public function build(RewardRequest $request): RewardContext;
 }

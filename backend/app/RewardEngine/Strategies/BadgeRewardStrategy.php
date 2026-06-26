@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Strategies;
@@ -34,11 +35,11 @@ final class BadgeRewardStrategy implements RewardStrategyContract
     public function calculate(RewardRequest $request, RewardContext $context): CalculatedReward
     {
         return new CalculatedReward(
-            rewardType:     RewardType::Badge,
+            rewardType: RewardType::Badge,
             idempotencyKey: $request->idempotencyKey,
-            userId:         $request->userId,
-            extras:         ['store_item_id' => (int) $request->meta('store_item_id', 0)],
-            isDryRun:       $request->dryRun,
+            userId: $request->userId,
+            extras: ['store_item_id' => (int) $request->meta('store_item_id', 0)],
+            isDryRun: $request->dryRun,
         );
     }
 
@@ -46,10 +47,10 @@ final class BadgeRewardStrategy implements RewardStrategyContract
     {
         if ($reward->isDryRun) {
             return new StrategyResult(
-                rewardType:     $this->handles(),
-                status:         RewardStatus::Validated,
+                rewardType: $this->handles(),
+                status: RewardStatus::Validated,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
+                userId: $reward->userId,
             );
         }
 
@@ -77,34 +78,34 @@ final class BadgeRewardStrategy implements RewardStrategyContract
 
         if ($exists) {
             return new StrategyResult(
-                rewardType:     $this->handles(),
-                status:         RewardStatus::Skipped,
+                rewardType: $this->handles(),
+                status: RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
-                wasIdempotent:  true,
+                userId: $reward->userId,
+                wasIdempotent: true,
             );
         }
 
         $inventory = UserInventory::create([
-            'user_id'       => $reward->userId,
+            'user_id' => $reward->userId,
             'store_item_id' => $storeItemId,
-            'quantity'      => 1,
-            'is_equipped'   => false,
-            'metadata'      => ['reward_key' => $reward->idempotencyKey, 'type' => 'badge'],
-            'purchased_at'  => now(),
+            'quantity' => 1,
+            'is_equipped' => false,
+            'metadata' => ['reward_key' => $reward->idempotencyKey, 'type' => 'badge'],
+            'purchased_at' => now(),
         ]);
 
         Log::info('[RewardEngine:BadgeStrategy] Badge granted', [
-            'user_id'       => $reward->userId,
+            'user_id' => $reward->userId,
             'store_item_id' => $storeItemId,
         ]);
 
         return new StrategyResult(
-            rewardType:     $this->handles(),
-            status:         RewardStatus::Distributed,
+            rewardType: $this->handles(),
+            status: RewardStatus::Distributed,
             idempotencyKey: $reward->idempotencyKey,
-            userId:         $reward->userId,
-            extras:         ['inventory_id' => $inventory->id],
+            userId: $reward->userId,
+            extras: ['inventory_id' => $inventory->id],
         );
     }
 

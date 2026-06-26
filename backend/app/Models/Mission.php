@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -20,12 +22,12 @@ final class Mission extends Model
     protected function casts(): array
     {
         return [
-            'criteria'        => 'array',
-            'xp_reward'       => 'integer',
-            'coin_reward'     => 'integer',
-            'target_count'    => 'integer',
-            'is_active'       => 'boolean',
-            'available_from'  => 'datetime',
+            'criteria' => 'array',
+            'xp_reward' => 'integer',
+            'coin_reward' => 'integer',
+            'target_count' => 'integer',
+            'is_active' => 'boolean',
+            'available_from' => 'datetime',
             'available_until' => 'datetime',
         ];
     }
@@ -35,17 +37,17 @@ final class Mission extends Model
         return $this->hasMany(UserMission::class);
     }
 
-    public function scopeActive(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
 
-    public function scopeDaily(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeDaily(Builder $query): Builder
     {
         return $query->where('type', 'daily');
     }
 
-    public function scopeWeekly(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeWeekly(Builder $query): Builder
     {
         return $query->where('type', 'weekly');
     }

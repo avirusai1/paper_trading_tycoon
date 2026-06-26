@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Seeders;
@@ -23,7 +24,7 @@ final class CareerTitlesSeeder extends Seeder
             ['title' => 'Fund Manager',         'min_level' => 41, 'max_level' => 50,  'color_hex' => '#F44336', 'sort_order' => 7],
             ['title' => 'Portfolio Manager',    'min_level' => 51, 'max_level' => 60,  'color_hex' => '#E91E63', 'sort_order' => 8],
             ['title' => 'Hedge Fund Manager',   'min_level' => 61, 'max_level' => 75,  'color_hex' => '#673AB7', 'sort_order' => 9],
-            ['title' => 'Market Legend',        'min_level' => 76, 'max_level' => 9999,'color_hex' => '#FFC107', 'sort_order' => 10],
+            ['title' => 'Market Legend',        'min_level' => 76, 'max_level' => 9999, 'color_hex' => '#FFC107', 'sort_order' => 10],
         ];
 
         foreach ($titles as $title) {

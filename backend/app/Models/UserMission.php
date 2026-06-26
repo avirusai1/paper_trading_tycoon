@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -19,12 +20,12 @@ final class UserMission extends Model
     protected function casts(): array
     {
         return [
-            'progress'     => 'integer',
-            'target'       => 'integer',
-            'assigned_at'  => 'datetime',
+            'progress' => 'integer',
+            'target' => 'integer',
+            'assigned_at' => 'datetime',
             'completed_at' => 'datetime',
-            'claimed_at'   => 'datetime',
-            'expires_at'   => 'datetime',
+            'claimed_at' => 'datetime',
+            'expires_at' => 'datetime',
         ];
     }
 
@@ -48,6 +49,7 @@ final class UserMission extends Model
         if ($this->target === 0) {
             return 100.0;
         }
+
         return min(100.0, ($this->progress / $this->target) * 100);
     }
 }

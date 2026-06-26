@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Actions;
@@ -27,7 +28,7 @@ final class GrantCareerProgressAction
     public function execute(GameContext $context): CareerResult
     {
         $currentLevel = $context->currentLevel();
-        $titleBefore  = $context->userLevel->career_title;
+        $titleBefore = $context->userLevel->career_title;
 
         $careerTitle = CareerTitle::forLevel($currentLevel);
 
@@ -35,7 +36,7 @@ final class GrantCareerProgressAction
             throw CareerException::noTitleForLevel($currentLevel);
         }
 
-        $titleAfter   = $careerTitle->title;
+        $titleAfter = $careerTitle->title;
         $titleChanged = $titleAfter !== $titleBefore;
 
         if ($titleChanged) {
@@ -44,10 +45,10 @@ final class GrantCareerProgressAction
         }
 
         return new CareerResult(
-            userId:       $context->userId(),
+            userId: $context->userId(),
             currentLevel: $currentLevel,
-            titleBefore:  $titleBefore,
-            titleAfter:   $titleAfter,
+            titleBefore: $titleBefore,
+            titleAfter: $titleAfter,
             titleChanged: $titleChanged,
         );
     }

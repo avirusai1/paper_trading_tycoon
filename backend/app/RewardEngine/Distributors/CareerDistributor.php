@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Distributors;
@@ -9,6 +10,7 @@ use App\RewardEngine\Contracts\RewardDistributorContract;
 use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\DistributionResult;
 use App\RewardEngine\Enums\RewardStatus;
+use App\RewardEngine\Enums\RewardType;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -25,10 +27,10 @@ final class CareerDistributor implements RewardDistributorContract
     {
         if ($reward->isDryRun) {
             return new DistributionResult(
-                rewardType:     $reward->rewardType,
-                status:         RewardStatus::Skipped,
+                rewardType: $reward->rewardType,
+                status: RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
+                userId: $reward->userId,
             );
         }
 
@@ -40,10 +42,10 @@ final class CareerDistributor implements RewardDistributorContract
 
         if ($title === null) {
             return new DistributionResult(
-                rewardType:     $reward->rewardType,
-                status:         RewardStatus::Skipped,
+                rewardType: $reward->rewardType,
+                status: RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
+                userId: $reward->userId,
             );
         }
 
@@ -56,15 +58,15 @@ final class CareerDistributor implements RewardDistributorContract
 
         Log::info('[RewardEngine:CareerDistributor] Career title updated', [
             'user_id' => $reward->userId,
-            'title'   => $title,
+            'title' => $title,
         ]);
 
         return new DistributionResult(
-            rewardType:     $reward->rewardType,
-            status:         RewardStatus::Distributed,
+            rewardType: $reward->rewardType,
+            status: RewardStatus::Distributed,
             idempotencyKey: $reward->idempotencyKey,
-            userId:         $reward->userId,
-            extras:         ['career_title' => $title],
+            userId: $reward->userId,
+            extras: ['career_title' => $title],
         );
     }
 
@@ -75,10 +77,10 @@ final class CareerDistributor implements RewardDistributorContract
         ]);
 
         return new DistributionResult(
-            rewardType:     \App\RewardEngine\Enums\RewardType::CareerUnlock,
-            status:         RewardStatus::RolledBack,
+            rewardType: RewardType::CareerUnlock,
+            status: RewardStatus::RolledBack,
             idempotencyKey: $idempotencyKey,
-            userId:         $context->userId(),
+            userId: $context->userId(),
         );
     }
 }

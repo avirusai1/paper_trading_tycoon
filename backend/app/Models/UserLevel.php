@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class UserLevel extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'user_id', 'current_level', 'current_xp',
         'xp_in_current_level', 'career_title', 'level_achieved_at',
@@ -19,10 +22,10 @@ final class UserLevel extends Model
     protected function casts(): array
     {
         return [
-            'current_level'       => 'integer',
-            'current_xp'          => 'integer',
+            'current_level' => 'integer',
+            'current_xp' => 'integer',
             'xp_in_current_level' => 'integer',
-            'level_achieved_at'   => 'datetime',
+            'level_achieved_at' => 'datetime',
         ];
     }
 

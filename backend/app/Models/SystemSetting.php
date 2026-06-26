@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -22,14 +23,15 @@ final class SystemSetting extends Model
         return match ($this->value_type) {
             'integer' => (int) $this->value,
             'boolean' => filter_var($this->value, FILTER_VALIDATE_BOOLEAN),
-            'json'    => json_decode($this->value, true),
-            default   => $this->value,
+            'json' => json_decode($this->value, true),
+            default => $this->value,
         };
     }
 
     public static function get(string $key, mixed $default = null): mixed
     {
-        $setting = static::where('key', $key)->first();
+        $setting = self::where('key', $key)->first();
+
         return $setting?->typedValue() ?? $default;
     }
 }

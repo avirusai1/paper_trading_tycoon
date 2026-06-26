@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\RewardEngine;
@@ -18,10 +19,10 @@ class RewardRequestTest extends TestCase
     public function make_produces_correct_idempotency_key(): void
     {
         $request = RewardRequest::make(
-            userId:     7,
+            userId: 7,
             rewardType: RewardType::Coins,
-            source:     RewardSource::Mission,
-            sourceId:   '42',
+            source: RewardSource::Mission,
+            sourceId: '42',
         );
 
         // Key format: "{source}:{rewardType}:{sourceId}:{userId}"
@@ -32,7 +33,7 @@ class RewardRequestTest extends TestCase
     public function as_dry_run_returns_copy_with_dry_run_true(): void
     {
         $original = RewardRequest::make(1, RewardType::XP, RewardSource::DailyLogin, 'today');
-        $dryRun   = $original->asDryRun();
+        $dryRun = $original->asDryRun();
 
         $this->assertFalse($original->dryRun);
         $this->assertTrue($dryRun->dryRun);
@@ -44,11 +45,11 @@ class RewardRequestTest extends TestCase
     public function meta_returns_correct_value_or_default(): void
     {
         $request = RewardRequest::make(
-            userId:     1,
+            userId: 1,
             rewardType: RewardType::InventoryItem,
-            source:     RewardSource::Achievement,
-            sourceId:   '5',
-            metadata:   ['store_item_id' => 99, 'premium_only' => true],
+            source: RewardSource::Achievement,
+            sourceId: '5',
+            metadata: ['store_item_id' => 99, 'premium_only' => true],
         );
 
         $this->assertEquals(99, $request->meta('store_item_id'));

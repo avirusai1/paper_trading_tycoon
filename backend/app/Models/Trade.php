@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
 use App\Enums\OrderSide;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,13 +28,13 @@ final class Trade extends Model
     protected function casts(): array
     {
         return [
-            'side'               => OrderSide::class,
-            'quantity'           => 'integer',
-            'price_paise'        => 'integer',
-            'total_value_paise'  => 'integer',
-            'brokerage_paise'    => 'integer',
-            'net_value_paise'    => 'integer',
-            'executed_at'        => 'datetime',
+            'side' => OrderSide::class,
+            'quantity' => 'integer',
+            'price_paise' => 'integer',
+            'total_value_paise' => 'integer',
+            'brokerage_paise' => 'integer',
+            'net_value_paise' => 'integer',
+            'executed_at' => 'datetime',
         ];
     }
 
@@ -51,12 +53,12 @@ final class Trade extends Model
         return $this->belongsTo(Stock::class);
     }
 
-    public function scopeBuys(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeBuys(Builder $query): Builder
     {
         return $query->where('side', OrderSide::Buy);
     }
 
-    public function scopeSells(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeSells(Builder $query): Builder
     {
         return $query->where('side', OrderSide::Sell);
     }

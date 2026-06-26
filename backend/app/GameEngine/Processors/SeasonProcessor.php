@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Processors;
 
 use App\GameEngine\Actions\GrantLeagueProgressAction;
 use App\GameEngine\Actions\GrantSeasonProgressAction;
-use App\GameEngine\Contracts\SeasonProcessorContract;
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\SeasonProcessorContract;
 use App\GameEngine\DTOs\SeasonResult;
 use App\GameEngine\Exceptions\SeasonException;
 use App\Models\Season;
@@ -18,7 +19,7 @@ final class SeasonProcessor implements SeasonProcessorContract
 {
     public function __construct(
         private readonly GrantLeagueProgressAction $leagueAction,
-        private readonly GrantSeasonProgressAction  $seasonAction,
+        private readonly GrantSeasonProgressAction $seasonAction,
     ) {}
 
     public function ensureEnrolled(GameContext $context): SeasonResult
@@ -30,12 +31,12 @@ final class SeasonProcessor implements SeasonProcessorContract
         $this->leagueAction->ensureEnrolled($context);
 
         return new SeasonResult(
-            userId:       $context->userId(),
-            seasonId:     $context->activeSeason->id,
-            seasonName:   $context->activeSeason->name,
-            enrolled:     true,
+            userId: $context->userId(),
+            seasonId: $context->activeSeason->id,
+            seasonName: $context->activeSeason->name,
+            enrolled: true,
             coinsGranted: 0,
-            xpGranted:    0,
+            xpGranted: 0,
         );
     }
 

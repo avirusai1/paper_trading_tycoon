@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Seeders;
@@ -48,27 +49,27 @@ final class GameRulesSeeder extends Seeder
             ['key' => 'leagues.gold.promote_top_percent',     'group' => 'leagues', 'value' => '25',   'value_type' => 'float',   'description' => 'Top % promoted from Gold'],
             ['key' => 'leagues.gold.demote_bottom_percent',   'group' => 'leagues', 'value' => '25',   'value_type' => 'float',   'description' => 'Bottom % demoted from Gold'],
             ['key' => 'leagues.platinum.promote_top_percent', 'group' => 'leagues', 'value' => '25',   'value_type' => 'float',   'description' => 'Top % promoted from Platinum'],
-            ['key' => 'leagues.platinum.demote_bottom_percent','group' => 'leagues', 'value' => '25',  'value_type' => 'float',   'description' => 'Bottom % demoted from Platinum'],
+            ['key' => 'leagues.platinum.demote_bottom_percent', 'group' => 'leagues', 'value' => '25',  'value_type' => 'float',   'description' => 'Bottom % demoted from Platinum'],
             ['key' => 'leagues.diamond.promote_top_percent',  'group' => 'leagues', 'value' => '0',    'value_type' => 'float',   'description' => 'Top % promoted from Diamond (none — highest tier)'],
-            ['key' => 'leagues.diamond.demote_bottom_percent','group' => 'leagues', 'value' => '25',   'value_type' => 'float',   'description' => 'Bottom % demoted from Diamond'],
+            ['key' => 'leagues.diamond.demote_bottom_percent', 'group' => 'leagues', 'value' => '25',   'value_type' => 'float',   'description' => 'Bottom % demoted from Diamond'],
             // ── Season settings ────────────────────────────────────────────
             ['key' => 'seasons.duration_days',             'group' => 'seasons', 'value' => '28',   'value_type' => 'integer', 'description' => 'Default season duration in days'],
             ['key' => 'seasons.grace_period_hours',        'group' => 'seasons', 'value' => '24',   'value_type' => 'integer', 'description' => 'Hours after season end before rewards are distributed'],
             // ── Mission refresh schedule ───────────────────────────────────
-            ['key' => 'missions.daily_reset_hour_ist',     'group' => 'missions','value' => '0',    'value_type' => 'integer', 'description' => 'Hour (IST) at which daily missions reset (0 = midnight)'],
-            ['key' => 'missions.weekly_reset_day',         'group' => 'missions','value' => '1',    'value_type' => 'integer', 'description' => 'Day of week for weekly reset (1=Monday)'],
-            ['key' => 'missions.daily_count',              'group' => 'missions','value' => '3',    'value_type' => 'integer', 'description' => 'Number of daily missions shown to each user'],
-            ['key' => 'missions.weekly_count',             'group' => 'missions','value' => '2',    'value_type' => 'integer', 'description' => 'Number of weekly missions shown to each user'],
+            ['key' => 'missions.daily_reset_hour_ist',     'group' => 'missions', 'value' => '0',    'value_type' => 'integer', 'description' => 'Hour (IST) at which daily missions reset (0 = midnight)'],
+            ['key' => 'missions.weekly_reset_day',         'group' => 'missions', 'value' => '1',    'value_type' => 'integer', 'description' => 'Day of week for weekly reset (1=Monday)'],
+            ['key' => 'missions.daily_count',              'group' => 'missions', 'value' => '3',    'value_type' => 'integer', 'description' => 'Number of daily missions shown to each user'],
+            ['key' => 'missions.weekly_count',             'group' => 'missions', 'value' => '2',    'value_type' => 'integer', 'description' => 'Number of weekly missions shown to each user'],
             // ── Market data settings ───────────────────────────────────────
             ['key' => 'market.quote_cache_ttl_seconds',    'group' => 'market',  'value' => '60',   'value_type' => 'integer', 'description' => 'How long to cache stock quotes'],
-            ['key' => 'market.open_time_ist',              'group' => 'market',  'value' => '09:15','value_type' => 'string',  'description' => 'NSE market open time (IST)'],
-            ['key' => 'market.close_time_ist',             'group' => 'market',  'value' => '15:30','value_type' => 'string',  'description' => 'NSE market close time (IST)'],
+            ['key' => 'market.open_time_ist',              'group' => 'market',  'value' => '09:15', 'value_type' => 'string',  'description' => 'NSE market open time (IST)'],
+            ['key' => 'market.close_time_ist',             'group' => 'market',  'value' => '15:30', 'value_type' => 'string',  'description' => 'NSE market close time (IST)'],
             // ── Starting conditions ────────────────────────────────────────
             ['key' => 'game.starting_cash_paise',          'group' => 'game',    'value' => '100000000', 'value_type' => 'integer', 'description' => 'Virtual cash granted on registration (₹10,00,000)'],
             ['key' => 'game.max_holdings_per_user',        'group' => 'game',    'value' => '20',   'value_type' => 'integer', 'description' => 'Maximum distinct stocks a user can hold simultaneously'],
             // ── Anti-cheat velocity limits ─────────────────────────────────
-            ['key' => 'anticheat.max_trades_per_minute',   'group' => 'anticheat','value' => '10',  'value_type' => 'integer', 'description' => 'Max trades a user can place per minute'],
-            ['key' => 'anticheat.max_referrals_per_device','group' => 'anticheat','value' => '3',   'value_type' => 'integer', 'description' => 'Max referrals originating from single device'],
+            ['key' => 'anticheat.max_trades_per_minute',   'group' => 'anticheat', 'value' => '10',  'value_type' => 'integer', 'description' => 'Max trades a user can place per minute'],
+            ['key' => 'anticheat.max_referrals_per_device', 'group' => 'anticheat', 'value' => '3',   'value_type' => 'integer', 'description' => 'Max referrals originating from single device'],
         ];
 
         foreach ($rules as $rule) {

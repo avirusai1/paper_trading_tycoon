@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Events;
@@ -13,12 +14,23 @@ final readonly class SeasonEndedEvent implements GameEvent
 {
     public function __construct(
         private readonly int $userId,
-        public readonly int  $seasonId,
+        public readonly int $seasonId,
     ) {}
 
-    public function eventType(): GameEventType { return GameEventType::SeasonEnded; }
-    public function userId(): int              { return $this->userId; }
-    public function sourceId(): string         { return (string) $this->seasonId; }
+    public function eventType(): GameEventType
+    {
+        return GameEventType::SeasonEnded;
+    }
+
+    public function userId(): int
+    {
+        return $this->userId;
+    }
+
+    public function sourceId(): string
+    {
+        return (string) $this->seasonId;
+    }
 
     public function idempotencyKey(): string
     {

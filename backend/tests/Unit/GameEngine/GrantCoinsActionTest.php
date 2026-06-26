@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\GameEngine;
@@ -37,7 +38,7 @@ final class GrantCoinsActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->action = new GrantCoinsAction();
+        $this->action = new GrantCoinsAction;
     }
 
     /** @test */
@@ -53,11 +54,11 @@ final class GrantCoinsActionTest extends TestCase
         );
 
         $this->assertInstanceOf(RewardResult::class, $result);
-        $this->assertSame(10,  $result->coinsGranted);
+        $this->assertSame(10, $result->coinsGranted);
         $this->assertSame(100, $result->balanceBefore);
         $this->assertSame(110, $result->balanceAfter);
         $this->assertDatabaseHas('wallets', [
-            'user_id'      => $context->userId(),
+            'user_id' => $context->userId(),
             'coin_balance' => 110,
         ]);
     }
@@ -75,10 +76,10 @@ final class GrantCoinsActionTest extends TestCase
         );
 
         $this->assertDatabaseHas('coin_transactions', [
-            'user_id'      => $context->userId(),
-            'amount'       => 250,
-            'source_id'    => 'achievement_5',
-            'balance_after'=> 250,
+            'user_id' => $context->userId(),
+            'amount' => 250,
+            'source_id' => 'achievement_5',
+            'balance_after' => 250,
         ]);
     }
 
@@ -120,8 +121,8 @@ final class GrantCoinsActionTest extends TestCase
         );
 
         $this->assertSame(-100, $result->coinsGranted);
-        $this->assertSame(500,  $result->balanceBefore);
-        $this->assertSame(400,  $result->balanceAfter);
+        $this->assertSame(500, $result->balanceBefore);
+        $this->assertSame(400, $result->balanceAfter);
     }
 
     /** @test */
@@ -156,24 +157,24 @@ final class GrantCoinsActionTest extends TestCase
 
     private function makeContext(int $coinBalance = 0): GameContext
     {
-        $user      = User::factory()->create();
-        $wallet    = Wallet::factory()->create(['user_id' => $user->id, 'coin_balance' => $coinBalance]);
+        $user = User::factory()->create();
+        $wallet = Wallet::factory()->create(['user_id' => $user->id, 'coin_balance' => $coinBalance]);
         $userLevel = UserLevel::factory()->create(['user_id' => $user->id]);
 
         return new GameContext(
-            user:                   $user,
-            playerState:            PlayerState::Active,
-            wallet:                 $wallet,
-            userLevel:              $userLevel,
-            currentLeague:          null,
-            league:                 null,
-            activeSeason:           null,
-            activeMissions:         [],
+            user: $user,
+            playerState: PlayerState::Active,
+            wallet: $wallet,
+            userLevel: $userLevel,
+            currentLeague: null,
+            league: null,
+            activeSeason: null,
+            activeMissions: [],
             unlockedAchievementIds: [],
-            loginStreakDays:        0,
-            activeMultipliers:      ['xp' => 1.0, 'coins' => 1.0],
-            featureFlags:           [],
-            builtAt:                microtime(true),
+            loginStreakDays: 0,
+            activeMultipliers: ['xp' => 1.0, 'coins' => 1.0],
+            featureFlags: [],
+            builtAt: microtime(true),
         );
     }
 }

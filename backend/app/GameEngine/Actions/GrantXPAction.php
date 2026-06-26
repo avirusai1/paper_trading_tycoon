@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Actions;
 
-use App\GameEngine\Contracts\GameRuleProviderContract;
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\GameRuleProviderContract;
 use App\GameEngine\DTOs\XPResult;
 use App\GameEngine\Enums\XPSource;
 use App\GameEngine\Exceptions\XPException;
@@ -13,6 +14,7 @@ use App\GameEngine\Support\XPMultiplierCalculator;
 use App\Models\Level;
 use App\Models\UserLevel;
 use App\Models\XpLog;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -31,8 +33,8 @@ final class GrantXPAction
 {
     public function __construct(
         private readonly GameRuleProviderContract $rules,
-        private readonly XPMultiplierCalculator   $multiplierCalc,
-        private readonly DailyCapTracker          $capTracker,
+        private readonly XPMultiplierCalculator $multiplierCalc,
+        private readonly DailyCapTracker $capTracker,
     ) {}
 
     /**
@@ -40,9 +42,9 @@ final class GrantXPAction
      */
     public function execute(
         GameContext $context,
-        XPSource    $source,
-        string      $sourceId,
-        ?int        $overrideAmount = null,
+        XPSource $source,
+        string $sourceId,
+        ?int $overrideAmount = null,
     ): XPResult {
         // 1. Determine base XP amount
         $baseAmount = $overrideAmount ?? $this->rules->getInt($source->ruleKey(), 0);
@@ -52,14 +54,14 @@ final class GrantXPAction
         }
 
         // 2. Apply multiplier
-        $multiplier    = $this->multiplierCalc->calculate($context);
-        $effectiveXP   = (int) floor($baseAmount * $multiplier);
+        $multiplier = $this->multiplierCalc->calculate($context);
+        $effectiveXP = (int) floor($baseAmount * $multiplier);
 
         // 3. Enforce daily cap
         if ($source->hasDailyCap()) {
-            $capKey   = $source->dailyCapRuleKey();
-            $cap      = $capKey !== null ? $this->rules->getInt($capKey) : PHP_INT_MAX;
-            $today    = $this->capTracker->getDailyTotal($context->userId(), $source);
+            $capKey = $source->dailyCapRuleKey();
+            $cap = $capKey !== null ? $this->rules->getInt($capKey) : PHP_INT_MAX;
+            $today = $this->capTracker->getDailyTotal($context->userId(), $source);
             $remaining = $cap - $today;
 
             if ($remaining <= 0) {
@@ -71,8 +73,8 @@ final class GrantXPAction
 
         // 4. Persist atomically
         return DB::transaction(function () use ($context, $source, $sourceId, $effectiveXP): XPResult {
-            $userLevel  = $context->userLevel;
-            $xpBefore   = $userLevel->current_xp;
+            $userLevel = $context->userLevel;
+            $xpBefore = $userLevel->current_xp;
             $levelBefore = $userLevel->current_level;
 
             // Upsert UserLevel XP (lock for update to prevent concurrent race)
@@ -81,34 +83,34 @@ final class GrantXPAction
                 ->update(['current_xp' => DB::raw("current_xp + {$effectiveXP}")]);
 
             $updatedLevel = UserLevel::where('user_id', $context->userId())->first();
-            $xpAfter      = $updatedLevel->current_xp;
+            $xpAfter = $updatedLevel->current_xp;
 
             // Determine new level
-            $newLevel     = $this->calculateLevel($xpAfter);
+            $newLevel = $this->calculateLevel($xpAfter);
             $levelChanged = $newLevel !== $levelBefore;
 
             if ($levelChanged) {
                 UserLevel::where('user_id', $context->userId())
                     ->update([
-                        'current_level'      => $newLevel,
+                        'current_level' => $newLevel,
                         'xp_in_current_level' => $this->xpInCurrentLevel($xpAfter, $newLevel),
-                        'level_achieved_at'  => now(),
+                        'level_achieved_at' => now(),
                     ]);
             }
 
             // Append-only XP log (DB UNIQUE prevents double-grant on retry)
             try {
                 XpLog::create([
-                    'user_id'      => $context->userId(),
-                    'amount'       => $effectiveXP,
-                    'source'       => $source->value,
-                    'source_id'    => $sourceId,
-                    'xp_before'    => $xpBefore,
-                    'xp_after'     => $xpAfter,
+                    'user_id' => $context->userId(),
+                    'amount' => $effectiveXP,
+                    'source' => $source->value,
+                    'source_id' => $sourceId,
+                    'xp_before' => $xpBefore,
+                    'xp_after' => $xpAfter,
                     'level_before' => $levelBefore,
-                    'level_after'  => $newLevel,
+                    'level_after' => $newLevel,
                 ]);
-            } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+            } catch (UniqueConstraintViolationException) {
                 // Already granted — idempotent no-op, reconstruct result from existing log
                 $existing = XpLog::where('user_id', $context->userId())
                     ->where('source', $source->value)
@@ -116,15 +118,15 @@ final class GrantXPAction
                     ->firstOrFail();
 
                 return new XPResult(
-                    userId:        $context->userId(),
+                    userId: $context->userId(),
                     amountGranted: $existing->amount,
-                    xpBefore:      $existing->xp_before,
-                    xpAfter:       $existing->xp_after,
-                    levelBefore:   $existing->level_before,
-                    levelAfter:    $existing->level_after,
-                    didLevelUp:    $existing->level_after > $existing->level_before,
-                    source:        $source->value,
-                    sourceId:      $sourceId,
+                    xpBefore: $existing->xp_before,
+                    xpAfter: $existing->xp_after,
+                    levelBefore: $existing->level_before,
+                    levelAfter: $existing->level_after,
+                    didLevelUp: $existing->level_after > $existing->level_before,
+                    source: $source->value,
+                    sourceId: $sourceId,
                     wasCapApplied: false,
                 );
             }
@@ -135,15 +137,15 @@ final class GrantXPAction
             }
 
             return new XPResult(
-                userId:        $context->userId(),
+                userId: $context->userId(),
                 amountGranted: $effectiveXP,
-                xpBefore:      $xpBefore,
-                xpAfter:       $xpAfter,
-                levelBefore:   $levelBefore,
-                levelAfter:    $newLevel,
-                didLevelUp:    $levelChanged,
-                source:        $source->value,
-                sourceId:      $sourceId,
+                xpBefore: $xpBefore,
+                xpAfter: $xpAfter,
+                levelBefore: $levelBefore,
+                levelAfter: $newLevel,
+                didLevelUp: $levelChanged,
+                source: $source->value,
+                sourceId: $sourceId,
                 wasCapApplied: false,
             );
         });
@@ -166,25 +168,26 @@ final class GrantXPAction
     private function xpInCurrentLevel(int $totalXP, int $level): int
     {
         $levelFloor = (int) Level::where('level_number', $level)->value('xp_required');
+
         return max(0, $totalXP - $levelFloor);
     }
 
     private function zeroResult(
         GameContext $context,
-        XPSource    $source,
-        string      $sourceId,
-        bool        $wasCapApplied = false,
+        XPSource $source,
+        string $sourceId,
+        bool $wasCapApplied = false,
     ): XPResult {
         return new XPResult(
-            userId:        $context->userId(),
+            userId: $context->userId(),
             amountGranted: 0,
-            xpBefore:      $context->currentXP(),
-            xpAfter:       $context->currentXP(),
-            levelBefore:   $context->currentLevel(),
-            levelAfter:    $context->currentLevel(),
-            didLevelUp:    false,
-            source:        $source->value,
-            sourceId:      $sourceId,
+            xpBefore: $context->currentXP(),
+            xpAfter: $context->currentXP(),
+            levelBefore: $context->currentLevel(),
+            levelAfter: $context->currentLevel(),
+            didLevelUp: false,
+            source: $source->value,
+            sourceId: $sourceId,
             wasCapApplied: $wasCapApplied,
         );
     }

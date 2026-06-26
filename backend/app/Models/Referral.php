@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -21,7 +22,7 @@ final class Referral extends Model
     {
         return [
             'registered_at' => 'datetime',
-            'completed_at'  => 'datetime',
+            'completed_at' => 'datetime',
         ];
     }
 

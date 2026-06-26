@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Calculators;
@@ -33,10 +34,10 @@ final class PremiumBonusCalculator
     {
         if (! $context->isPremium) {
             return new CalculatedReward(
-                rewardType:     RewardType::PremiumBonus,
+                rewardType: RewardType::PremiumBonus,
                 idempotencyKey: $request->idempotencyKey,
-                userId:         $request->userId,
-                isDryRun:       $request->dryRun,
+                userId: $request->userId,
+                isDryRun: $request->dryRun,
             );
         }
 
@@ -47,12 +48,12 @@ final class PremiumBonusCalculator
         }
 
         return new CalculatedReward(
-            rewardType:     RewardType::PremiumBonus,
-            idempotencyKey: $request->idempotencyKey . ':premium',
-            userId:         $request->userId,
-            baseCoins:      $bonusCoins,
-            finalCoins:     $bonusCoins,
-            isDryRun:       $request->dryRun,
+            rewardType: RewardType::PremiumBonus,
+            idempotencyKey: $request->idempotencyKey.':premium',
+            userId: $request->userId,
+            baseCoins: $bonusCoins,
+            finalCoins: $bonusCoins,
+            isDryRun: $request->dryRun,
         );
     }
 }

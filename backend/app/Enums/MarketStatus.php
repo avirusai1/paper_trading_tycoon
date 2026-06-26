@@ -10,9 +10,9 @@ namespace App\Enums;
  */
 enum MarketStatus: string
 {
-    case Open       = 'open';
-    case Closed     = 'closed';
-    case PreMarket  = 'pre_market';
+    case Open = 'open';
+    case Closed = 'closed';
+    case PreMarket = 'pre_market';
     case PostMarket = 'post_market';
-    case Holiday    = 'holiday';
+    case Holiday = 'holiday';
 }

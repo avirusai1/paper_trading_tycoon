@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -21,14 +22,14 @@ final class StoreItem extends Model
     protected function casts(): array
     {
         return [
-            'coin_price'      => 'integer',
-            'effects'         => 'array',
-            'required_level'  => 'integer',
+            'coin_price' => 'integer',
+            'effects' => 'array',
+            'required_level' => 'integer',
             'is_premium_only' => 'boolean',
-            'is_active'       => 'boolean',
-            'is_limited'      => 'boolean',
-            'stock_quantity'  => 'integer',
-            'sold_count'      => 'integer',
+            'is_active' => 'boolean',
+            'is_limited' => 'boolean',
+            'stock_quantity' => 'integer',
+            'sold_count' => 'integer',
         ];
     }
 
@@ -50,6 +51,7 @@ final class StoreItem extends Model
         if ($this->is_limited && $this->stock_quantity !== null && $this->sold_count >= $this->stock_quantity) {
             return false;
         }
+
         return true;
     }
 }

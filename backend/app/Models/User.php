@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\PremiumPlan;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -53,8 +54,8 @@ final class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
-            'is_premium'        => 'boolean',
-            'password'          => 'hashed',
+            'is_premium' => 'boolean',
+            'password' => 'hashed',
         ];
     }
 
@@ -162,12 +163,12 @@ final class User extends Authenticatable implements MustVerifyEmail
 
     // ── Scopes ────────────────────────────────────────────────────────────────
 
-    public function scopeActive(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active');
     }
 
-    public function scopePremium(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopePremium(Builder $query): Builder
     {
         return $query->where('is_premium', true);
     }

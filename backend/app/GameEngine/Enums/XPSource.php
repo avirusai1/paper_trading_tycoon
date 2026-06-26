@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Enums;
@@ -12,22 +13,22 @@ namespace App\GameEngine\Enums;
  */
 enum XPSource: string
 {
-    case TradeBuy             = 'trade_buy';
-    case TradeSell            = 'trade_sell';
-    case DailyLogin           = 'daily_login';
-    case MissionCompleted     = 'mission_completed';
-    case AchievementUnlocked  = 'achievement_unlocked';
-    case ReferralJoined       = 'referral_joined';
-    case FirstTrade           = 'first_trade';
-    case SeasonReward         = 'season_reward';
-    case AdminGrant           = 'admin_grant';
+    case TradeBuy = 'trade_buy';
+    case TradeSell = 'trade_sell';
+    case DailyLogin = 'daily_login';
+    case MissionCompleted = 'mission_completed';
+    case AchievementUnlocked = 'achievement_unlocked';
+    case ReferralJoined = 'referral_joined';
+    case FirstTrade = 'first_trade';
+    case SeasonReward = 'season_reward';
+    case AdminGrant = 'admin_grant';
 
     /**
      * The Rules Engine key used to read the base XP value for this source.
      */
     public function ruleKey(): string
     {
-        return 'xp.' . $this->value;
+        return 'xp.'.$this->value;
     }
 
     /**
@@ -37,9 +38,9 @@ enum XPSource: string
     public function dailyCapRuleKey(): ?string
     {
         return match ($this) {
-            self::TradeBuy   => 'xp.daily_cap.trade_buy',
-            self::TradeSell  => 'xp.daily_cap.trade_sell',
-            default          => null,
+            self::TradeBuy => 'xp.daily_cap.trade_buy',
+            self::TradeSell => 'xp.daily_cap.trade_sell',
+            default => null,
         };
     }
 

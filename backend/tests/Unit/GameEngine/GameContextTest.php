@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\GameEngine;
@@ -112,7 +113,7 @@ final class GameContextTest extends TestCase
     /** @test */
     public function to_snapshot_returns_game_context_snapshot(): void
     {
-        $context  = $this->makeContext(PlayerState::Active);
+        $context = $this->makeContext(PlayerState::Active);
         $snapshot = $context->toSnapshot();
 
         $this->assertInstanceOf(GameContextSnapshot::class, $snapshot);
@@ -125,42 +126,42 @@ final class GameContextTest extends TestCase
 
     private function makeContext(
         PlayerState $state,
-        array       $multipliers = ['xp' => 1.0, 'coins' => 1.0],
-        array       $flags       = [],
-        array       $unlockedIds = [],
+        array $multipliers = ['xp' => 1.0, 'coins' => 1.0],
+        array $flags = [],
+        array $unlockedIds = [],
     ): GameContext {
-        $user             = new User();
-        $user->id         = 1;
-        $user->name       = 'Test';
-        $user->email      = 'test@example.com';
+        $user = new User;
+        $user->id = 1;
+        $user->name = 'Test';
+        $user->email = 'test@example.com';
         $user->is_premium = $state === PlayerState::ActivePremium;
-        $user->status     = 'active';
+        $user->status = 'active';
 
-        $wallet                       = new Wallet();
-        $wallet->coin_balance         = 500;
-        $wallet->virtual_cash_paise   = 100_000_00;
+        $wallet = new Wallet;
+        $wallet->coin_balance = 500;
+        $wallet->virtual_cash_paise = 100_000_00;
         $wallet->total_deposited_paise = 100_000_00;
 
-        $userLevel                   = new UserLevel();
-        $userLevel->current_level    = 5;
-        $userLevel->current_xp       = 400;
+        $userLevel = new UserLevel;
+        $userLevel->current_level = 5;
+        $userLevel->current_xp = 400;
         $userLevel->xp_in_current_level = 50;
-        $userLevel->career_title     = 'Intern Trader';
+        $userLevel->career_title = 'Intern Trader';
 
         return new GameContext(
-            user:                   $user,
-            playerState:            $state,
-            wallet:                 $wallet,
-            userLevel:              $userLevel,
-            currentLeague:          null,
-            league:                 null,
-            activeSeason:           null,
-            activeMissions:         [],
+            user: $user,
+            playerState: $state,
+            wallet: $wallet,
+            userLevel: $userLevel,
+            currentLeague: null,
+            league: null,
+            activeSeason: null,
+            activeMissions: [],
             unlockedAchievementIds: $unlockedIds,
-            loginStreakDays:        0,
-            activeMultipliers:      $multipliers,
-            featureFlags:           $flags,
-            builtAt:                microtime(true),
+            loginStreakDays: 0,
+            activeMultipliers: $multipliers,
+            featureFlags: $flags,
+            builtAt: microtime(true),
         );
     }
 }

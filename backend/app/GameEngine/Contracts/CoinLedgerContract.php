@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Contracts;
 
 use App\Enums\CoinTransactionSource;
+use App\GameEngine\Exceptions\RewardException;
 
 /**
  * Internal contract for the Coin Ledger — used by RewardProcessor to persist
@@ -19,7 +21,7 @@ interface CoinLedgerContract
      *
      * Returns the new materialized coin balance.
      *
-     * @throws \App\GameEngine\Exceptions\RewardException  On negative balance after debit.
+     * @throws RewardException On negative balance after debit.
      */
     public function credit(
         int $userId,
@@ -32,7 +34,7 @@ interface CoinLedgerContract
     /**
      * Debit coins from a user.
      *
-     * @throws \App\GameEngine\Exceptions\RewardException  If balance would go negative.
+     * @throws RewardException If balance would go negative.
      */
     public function debit(
         int $userId,

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\GameEngine;
@@ -40,13 +41,13 @@ final class GameContextBuilderTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->builder = new GameContextBuilder();
+        $this->builder = new GameContextBuilder;
     }
 
     /** @test */
     public function it_builds_context_for_valid_user(): void
     {
-        $user      = User::factory()->create(['status' => 'active', 'is_premium' => false]);
+        $user = User::factory()->create(['status' => 'active', 'is_premium' => false]);
         Wallet::factory()->create(['user_id' => $user->id]);
         UserLevel::factory()->create(['user_id' => $user->id]);
 
@@ -92,14 +93,14 @@ final class GameContextBuilderTest extends TestCase
     /** @test */
     public function it_loads_active_season_and_league(): void
     {
-        $user   = User::factory()->create(['status' => 'active']);
+        $user = User::factory()->create(['status' => 'active']);
         Wallet::factory()->create(['user_id' => $user->id]);
         UserLevel::factory()->create(['user_id' => $user->id]);
 
-        $season  = Season::factory()->create(['status' => 'active']);
-        $league  = League::factory()->create(['rank' => 1]);
+        $season = Season::factory()->create(['status' => 'active']);
+        $league = League::factory()->create(['rank' => 1]);
         UserLeague::factory()->create([
-            'user_id'   => $user->id,
+            'user_id' => $user->id,
             'season_id' => $season->id,
             'league_id' => $league->id,
         ]);
@@ -119,11 +120,11 @@ final class GameContextBuilderTest extends TestCase
         UserLevel::factory()->create(['user_id' => $user->id]);
 
         FeatureFlag::factory()->create([
-            'key'                => 'new_missions',
-            'is_enabled'         => true,
+            'key' => 'new_missions',
+            'is_enabled' => true,
             'rollout_percentage' => 100,
-            'premium_only'       => false,
-            'allowed_user_ids'   => null,
+            'premium_only' => false,
+            'allowed_user_ids' => null,
         ]);
 
         $context = $this->builder->build($user->id);

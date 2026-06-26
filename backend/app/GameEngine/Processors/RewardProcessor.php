@@ -1,15 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Processors;
 
 use App\Enums\CoinTransactionSource;
 use App\GameEngine\Actions\GrantCoinsAction;
+use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\Contracts\GameRuleProviderContract;
 use App\GameEngine\Contracts\RewardProcessorContract;
-use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\RewardResult;
-use App\GameEngine\Exceptions\RewardException;
 
 /**
  * Implements RewardProcessorContract.
@@ -20,15 +20,15 @@ use App\GameEngine\Exceptions\RewardException;
 final class RewardProcessor implements RewardProcessorContract
 {
     public function __construct(
-        private readonly GrantCoinsAction        $grantCoins,
+        private readonly GrantCoinsAction $grantCoins,
         private readonly GameRuleProviderContract $rules,
     ) {}
 
     public function grantCoins(
-        GameContext           $context,
+        GameContext $context,
         CoinTransactionSource $source,
-        string                $sourceId,
-        int                   $coinAmount = 0,
+        string $sourceId,
+        int $coinAmount = 0,
     ): RewardResult {
         $amount = $coinAmount > 0
             ? $coinAmount
@@ -37,12 +37,12 @@ final class RewardProcessor implements RewardProcessorContract
         if ($amount <= 0) {
             // No coins configured for this source — no-op
             return new RewardResult(
-                userId:        $context->userId(),
-                coinsGranted:  0,
+                userId: $context->userId(),
+                coinsGranted: 0,
                 balanceBefore: $context->coinBalance(),
-                balanceAfter:  $context->coinBalance(),
-                source:        $source->value,
-                sourceId:      $sourceId,
+                balanceAfter: $context->coinBalance(),
+                source: $source->value,
+                sourceId: $sourceId,
             );
         }
 
@@ -55,11 +55,11 @@ final class RewardProcessor implements RewardProcessorContract
     private function resolveAmountFromRules(CoinTransactionSource $source, GameContext $context): int
     {
         $key = match ($source) {
-            CoinTransactionSource::DailyLogin   => 'coins.daily_login',
-            CoinTransactionSource::LevelUp      => 'coins.level_up',
-            CoinTransactionSource::Referral      => 'coins.referral',
+            CoinTransactionSource::DailyLogin => 'coins.daily_login',
+            CoinTransactionSource::LevelUp => 'coins.level_up',
+            CoinTransactionSource::Referral => 'coins.referral',
             CoinTransactionSource::SeasonReward => 'coins.season_reward_base',
-            default                              => null,
+            default => null,
         };
 
         if ($key === null) {

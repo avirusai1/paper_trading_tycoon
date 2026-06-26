@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Support;
@@ -6,10 +7,9 @@ namespace App\GameEngine\Support;
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\Events\GameEvent;
 use App\GameEngine\Events\TradeExecutedEvent;
-use App\GameEngine\Events\LevelUpEvent;
-use App\GameEngine\Events\DailyLoginEvent;
-use App\GameEngine\Events\MissionCompletedEvent;
 use App\Models\Achievement;
+use App\Models\Trade;
+use App\Models\UserMission;
 
 /**
  * Evaluates whether a given achievement's criteria are satisfied by the
@@ -36,28 +36,28 @@ final class AchievementCriteriaEvaluator
     public function isSatisfied(Achievement $achievement, GameContext $context, GameEvent $event): bool
     {
         $criteria = $achievement->criteria ?? [];
-        $type     = $criteria['type'] ?? '';
+        $type = $criteria['type'] ?? '';
 
         return match ($type) {
-            'first_trade'     => $event instanceof TradeExecutedEvent && $event->isFirstTrade,
-            'level_reached'   => $context->currentLevel() >= (int) ($criteria['threshold'] ?? PHP_INT_MAX),
-            'login_streak'    => $context->loginStreakDays >= (int) ($criteria['threshold'] ?? PHP_INT_MAX),
-            'mission_count'   => $this->completedMissionCount($context) >= (int) ($criteria['threshold'] ?? PHP_INT_MAX),
+            'first_trade' => $event instanceof TradeExecutedEvent && $event->isFirstTrade,
+            'level_reached' => $context->currentLevel() >= (int) ($criteria['threshold'] ?? PHP_INT_MAX),
+            'login_streak' => $context->loginStreakDays >= (int) ($criteria['threshold'] ?? PHP_INT_MAX),
+            'mission_count' => $this->completedMissionCount($context) >= (int) ($criteria['threshold'] ?? PHP_INT_MAX),
             'portfolio_value' => $context->wallet->virtual_cash_paise >= (int) ($criteria['threshold_paise'] ?? PHP_INT_MAX),
-            'trade_count'     => $this->tradeCount($context) >= (int) ($criteria['threshold'] ?? PHP_INT_MAX),
-            default           => false,
+            'trade_count' => $this->tradeCount($context) >= (int) ($criteria['threshold'] ?? PHP_INT_MAX),
+            default => false,
         };
     }
 
     private function completedMissionCount(GameContext $context): int
     {
-        return \App\Models\UserMission::where('user_id', $context->userId())
+        return UserMission::where('user_id', $context->userId())
             ->where('status', 'completed')
             ->count();
     }
 
     private function tradeCount(GameContext $context): int
     {
-        return \App\Models\Trade::where('user_id', $context->userId())->count();
+        return Trade::where('user_id', $context->userId())->count();
     }
 }

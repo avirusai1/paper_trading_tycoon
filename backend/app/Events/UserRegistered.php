@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Events;
@@ -17,8 +18,8 @@ final class UserRegistered
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
-        public readonly int     $userId,
+        public readonly int $userId,
         public readonly ?string $referralCode,
-        public readonly Carbon  $timestamp,
+        public readonly Carbon $timestamp,
     ) {}
 }

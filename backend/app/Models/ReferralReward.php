@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -20,8 +21,8 @@ final class ReferralReward extends Model
     {
         return [
             'coin_amount' => 'integer',
-            'xp_amount'   => 'integer',
-            'granted_at'  => 'datetime',
+            'xp_amount' => 'integer',
+            'granted_at' => 'datetime',
         ];
     }
 

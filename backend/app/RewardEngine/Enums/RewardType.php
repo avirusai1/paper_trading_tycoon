@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Enums;
@@ -17,21 +18,21 @@ namespace App\RewardEngine\Enums;
  */
 enum RewardType: string
 {
-    case XP             = 'xp';
-    case Coins          = 'coins';
-    case InventoryItem  = 'inventory_item';
-    case CareerUnlock   = 'career_unlock';
-    case Title          = 'title';
-    case Badge          = 'badge';
-    case Avatar         = 'avatar';
-    case Frame          = 'frame';
-    case Theme          = 'theme';
-    case MissionUnlock  = 'mission_unlock';
-    case FeatureUnlock  = 'feature_unlock';
-    case PremiumBonus   = 'premium_bonus';
-    case SeasonReward   = 'season_reward';
+    case XP = 'xp';
+    case Coins = 'coins';
+    case InventoryItem = 'inventory_item';
+    case CareerUnlock = 'career_unlock';
+    case Title = 'title';
+    case Badge = 'badge';
+    case Avatar = 'avatar';
+    case Frame = 'frame';
+    case Theme = 'theme';
+    case MissionUnlock = 'mission_unlock';
+    case FeatureUnlock = 'feature_unlock';
+    case PremiumBonus = 'premium_bonus';
+    case SeasonReward = 'season_reward';
     case ReferralReward = 'referral_reward';
-    case AdminReward    = 'admin_reward';
+    case AdminReward = 'admin_reward';
 
     /**
      * Whether this reward type modifies the wallet (requires ledger entry).
@@ -42,7 +43,7 @@ enum RewardType: string
             self::Coins, self::PremiumBonus,
             self::SeasonReward, self::ReferralReward,
             self::AdminReward => true,
-            default           => false,
+            default => false,
         };
     }
 
@@ -54,7 +55,7 @@ enum RewardType: string
         return match ($this) {
             self::XP, self::SeasonReward,
             self::ReferralReward, self::AdminReward => true,
-            default                                  => false,
+            default => false,
         };
     }
 
@@ -66,7 +67,7 @@ enum RewardType: string
         return match ($this) {
             self::InventoryItem, self::Badge,
             self::Avatar, self::Frame, self::Theme => true,
-            default                                 => false,
+            default => false,
         };
     }
 
@@ -83,7 +84,7 @@ enum RewardType: string
             self::Avatar, self::Frame, self::Theme,
             self::PremiumBonus, self::SeasonReward,
             self::ReferralReward, self::AdminReward => true,
-            default                                  => false,
+            default => false,
         };
     }
 }

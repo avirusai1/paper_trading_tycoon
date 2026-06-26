@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -21,11 +22,11 @@ final class XpLog extends Model
     protected function casts(): array
     {
         return [
-            'amount'       => 'integer',
-            'xp_before'    => 'integer',
-            'xp_after'     => 'integer',
+            'amount' => 'integer',
+            'xp_before' => 'integer',
+            'xp_after' => 'integer',
             'level_before' => 'integer',
-            'level_after'  => 'integer',
+            'level_after' => 'integer',
         ];
     }
 

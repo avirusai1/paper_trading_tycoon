@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Actions;
@@ -21,19 +22,19 @@ use Illuminate\Support\Facades\Log;
  * Supports partial rollback detection: if the strategy's rollback returns
  * a non-RolledBack status, a RewardRollbackException is thrown.
  */
-final class RollbackRewardAction
+class RollbackRewardAction
 {
     public function __construct(
         private readonly RewardStrategyRegistryContract $registry,
     ) {}
 
     /**
-     * @throws RewardRollbackException  If rollback fails or is only partial.
+     * @throws RewardRollbackException If rollback fails or is only partial.
      */
     public function execute(string $idempotencyKey, RewardContext $context): DistributionResult
     {
         Log::info('[RewardEngine:RollbackAction] Rolling back reward', [
-            'user_id'         => $context->userId(),
+            'user_id' => $context->userId(),
             'idempotency_key' => $idempotencyKey,
         ]);
 
@@ -45,17 +46,17 @@ final class RollbackRewardAction
 
         if ($history === null) {
             Log::warning('[RewardEngine:RollbackAction] No reward history found for rollback', [
-                'user_id'         => $context->userId(),
+                'user_id' => $context->userId(),
                 'idempotency_key' => $idempotencyKey,
             ]);
 
             // Nothing to roll back — treat as success
             return new DistributionResult(
-                rewardType:     RewardType::AdminReward,
-                status:         RewardStatus::RolledBack,
+                rewardType: RewardType::AdminReward,
+                status: RewardStatus::RolledBack,
                 idempotencyKey: $idempotencyKey,
-                userId:         $context->userId(),
-                wasIdempotent:  true,
+                userId: $context->userId(),
+                wasIdempotent: true,
             );
         }
 
@@ -80,10 +81,10 @@ final class RollbackRewardAction
         }
 
         return new DistributionResult(
-            rewardType:     $strategyResult->rewardType,
-            status:         RewardStatus::RolledBack,
+            rewardType: $strategyResult->rewardType,
+            status: RewardStatus::RolledBack,
             idempotencyKey: $idempotencyKey,
-            userId:         $context->userId(),
+            userId: $context->userId(),
         );
     }
 }

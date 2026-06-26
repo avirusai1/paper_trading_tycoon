@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Contracts;
+
+use App\GameEngine\Exceptions\GameRuleNotFoundException;
 
 /**
  * Contract for reading game balance rules.
@@ -17,28 +20,28 @@ interface GameRuleProviderContract
      * Return the integer value of a game rule.
      * Throws if the key is not found and no default is supplied.
      *
-     * @throws \App\GameEngine\Exceptions\GameRuleNotFoundException
+     * @throws GameRuleNotFoundException
      */
     public function getInt(string $key, ?int $default = null): int;
 
     /**
      * Return the float value of a game rule.
      *
-     * @throws \App\GameEngine\Exceptions\GameRuleNotFoundException
+     * @throws GameRuleNotFoundException
      */
     public function getFloat(string $key, ?float $default = null): float;
 
     /**
      * Return the string value of a game rule.
      *
-     * @throws \App\GameEngine\Exceptions\GameRuleNotFoundException
+     * @throws GameRuleNotFoundException
      */
     public function getString(string $key, ?string $default = null): string;
 
     /**
      * Return the boolean value of a game rule.
      *
-     * @throws \App\GameEngine\Exceptions\GameRuleNotFoundException
+     * @throws GameRuleNotFoundException
      */
     public function getBool(string $key, ?bool $default = null): bool;
 

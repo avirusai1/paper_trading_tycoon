@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Calculators;
@@ -34,10 +35,10 @@ final class ReferralBonusCalculator
     {
         $role = $request->meta('referral_role', 'referred');
 
-        $xpKey    = "rewards.referral.{$role}_xp";
+        $xpKey = "rewards.referral.{$role}_xp";
         $coinsKey = "rewards.referral.{$role}_coins";
 
-        $baseXP    = $this->rules->getInt($xpKey, -1);
+        $baseXP = $this->rules->getInt($xpKey, -1);
         $baseCoins = $this->rules->getInt($coinsKey, -1);
 
         if ($baseXP < 0) {
@@ -48,14 +49,14 @@ final class ReferralBonusCalculator
         }
 
         return new CalculatedReward(
-            rewardType:     RewardType::ReferralReward,
+            rewardType: RewardType::ReferralReward,
             idempotencyKey: $request->idempotencyKey,
-            userId:         $request->userId,
-            baseXP:         $baseXP,
-            finalXP:        $baseXP,
-            baseCoins:      $baseCoins,
-            finalCoins:     $baseCoins,
-            isDryRun:       $request->dryRun,
+            userId: $request->userId,
+            baseXP: $baseXP,
+            finalXP: $baseXP,
+            baseCoins: $baseCoins,
+            finalCoins: $baseCoins,
+            isDryRun: $request->dryRun,
         );
     }
 }

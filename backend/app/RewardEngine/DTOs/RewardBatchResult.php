@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\DTOs;
@@ -16,7 +17,7 @@ final readonly class RewardBatchResult
      */
     public function __construct(
         public readonly array $results,
-        public readonly int   $userId,
+        public readonly int $userId,
         public readonly float $processingTimeMs,
     ) {}
 
@@ -27,6 +28,7 @@ final readonly class RewardBatchResult
                 return true;
             }
         }
+
         return false;
     }
 

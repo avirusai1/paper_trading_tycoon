@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class UserLeague extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'user_id', 'league_id', 'season_id', 'tier', 'rank_position',
         'season_portfolio_value_paise', 'season_return_percent', 'season_result', 'rewards_claimed',
@@ -19,10 +22,10 @@ final class UserLeague extends Model
     protected function casts(): array
     {
         return [
-            'rank_position'                 => 'integer',
-            'season_portfolio_value_paise'  => 'integer',
-            'season_return_percent'         => 'float',
-            'rewards_claimed'               => 'boolean',
+            'rank_position' => 'integer',
+            'season_portfolio_value_paise' => 'integer',
+            'season_return_percent' => 'float',
+            'rewards_claimed' => 'boolean',
         ];
     }
 

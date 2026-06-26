@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\DTOs;
@@ -16,27 +17,27 @@ use App\GameEngine\Events\GameEvent;
 final readonly class GameResult
 {
     /**
-     * @param  XPResult[]          $xpResults
-     * @param  LevelResult[]       $levelResults
-     * @param  CareerResult[]      $careerResults
-     * @param  MissionResult[]     $missionResults
-     * @param  AchievementResult[] $achievementResults
-     * @param  LeagueResult[]      $leagueResults
-     * @param  SeasonResult[]      $seasonResults
-     * @param  RewardResult[]      $rewardResults
+     * @param  XPResult[]  $xpResults
+     * @param  LevelResult[]  $levelResults
+     * @param  CareerResult[]  $careerResults
+     * @param  MissionResult[]  $missionResults
+     * @param  AchievementResult[]  $achievementResults
+     * @param  LeagueResult[]  $leagueResults
+     * @param  SeasonResult[]  $seasonResults
+     * @param  RewardResult[]  $rewardResults
      */
     public function __construct(
         public readonly GameEvent $triggerEvent,
-        public readonly int       $userId,
-        public readonly array     $xpResults,
-        public readonly array     $levelResults,
-        public readonly array     $careerResults,
-        public readonly array     $missionResults,
-        public readonly array     $achievementResults,
-        public readonly array     $leagueResults,
-        public readonly array     $seasonResults,
-        public readonly array     $rewardResults,
-        public readonly float     $processingTimeMs,
+        public readonly int $userId,
+        public readonly array $xpResults,
+        public readonly array $levelResults,
+        public readonly array $careerResults,
+        public readonly array $missionResults,
+        public readonly array $achievementResults,
+        public readonly array $leagueResults,
+        public readonly array $seasonResults,
+        public readonly array $rewardResults,
+        public readonly float $processingTimeMs,
     ) {}
 
     public function totalXPGranted(): int
@@ -56,6 +57,7 @@ final readonly class GameResult
                 return true;
             }
         }
+
         return false;
     }
 

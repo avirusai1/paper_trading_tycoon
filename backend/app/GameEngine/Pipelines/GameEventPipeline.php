@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Pipelines;
 
 use App\Enums\CoinTransactionSource;
+use App\Enums\OrderSide;
+use App\GameEngine\Actions\GrantMissionProgressAction;
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\AchievementResult;
 use App\GameEngine\DTOs\CareerResult;
@@ -15,12 +18,15 @@ use App\GameEngine\DTOs\RewardResult;
 use App\GameEngine\DTOs\SeasonResult;
 use App\GameEngine\DTOs\XPResult;
 use App\GameEngine\Enums\GameEventType;
-use App\GameEngine\Enums\MissionProgressType;
 use App\GameEngine\Enums\XPSource;
 use App\GameEngine\Events\GameEvent;
 use App\GameEngine\Events\LevelUpEvent;
 use App\GameEngine\Events\PortfolioSnapshotEvent;
 use App\GameEngine\Events\SeasonEndedEvent;
+use App\GameEngine\Events\TradeExecutedEvent;
+use App\GameEngine\Exceptions\LeagueException;
+use App\GameEngine\Exceptions\MissionException;
+use App\GameEngine\Exceptions\SeasonException;
 use App\GameEngine\Processors\AchievementProcessor;
 use App\GameEngine\Processors\CareerProcessor;
 use App\GameEngine\Processors\LeagueProcessor;
@@ -28,6 +34,7 @@ use App\GameEngine\Processors\MissionProcessor;
 use App\GameEngine\Processors\RewardProcessor;
 use App\GameEngine\Processors\SeasonProcessor;
 use App\GameEngine\Processors\XPProcessor;
+use App\Models\Level;
 use App\Models\Season;
 
 /**
@@ -51,35 +58,35 @@ use App\Models\Season;
 final class GameEventPipeline
 {
     public function __construct(
-        private readonly XPProcessor          $xpProcessor,
-        private readonly CareerProcessor      $careerProcessor,
-        private readonly MissionProcessor     $missionProcessor,
+        private readonly XPProcessor $xpProcessor,
+        private readonly CareerProcessor $careerProcessor,
+        private readonly MissionProcessor $missionProcessor,
         private readonly AchievementProcessor $achievementProcessor,
-        private readonly LeagueProcessor      $leagueProcessor,
-        private readonly SeasonProcessor      $seasonProcessor,
-        private readonly RewardProcessor      $rewardProcessor,
+        private readonly LeagueProcessor $leagueProcessor,
+        private readonly SeasonProcessor $seasonProcessor,
+        private readonly RewardProcessor $rewardProcessor,
     ) {}
 
     public function execute(GameContext $context, GameEvent $event): GameResult
     {
         $startTime = microtime(true);
 
-        /** @var XPResult[]          $xpResults */
-        /** @var LevelResult[]       $levelResults */
-        /** @var CareerResult[]      $careerResults */
-        /** @var MissionResult[]     $missionResults */
+        /** @var XPResult[] $xpResults */
+        /** @var LevelResult[] $levelResults */
+        /** @var CareerResult[] $careerResults */
+        /** @var MissionResult[] $missionResults */
         /** @var AchievementResult[] $achievementResults */
-        /** @var LeagueResult[]      $leagueResults */
-        /** @var SeasonResult[]      $seasonResults */
-        /** @var RewardResult[]      $rewardResults */
-        $xpResults          = [];
-        $levelResults       = [];
-        $careerResults      = [];
-        $missionResults     = [];
+        /** @var LeagueResult[] $leagueResults */
+        /** @var SeasonResult[] $seasonResults */
+        /** @var RewardResult[] $rewardResults */
+        $xpResults = [];
+        $levelResults = [];
+        $careerResults = [];
+        $missionResults = [];
         $achievementResults = [];
-        $leagueResults      = [];
-        $seasonResults      = [];
-        $rewardResults      = [];
+        $leagueResults = [];
+        $seasonResults = [];
+        $rewardResults = [];
 
         // ── Guard ─────────────────────────────────────────────────────────────
         if (! $context->canParticipate()) {
@@ -96,7 +103,7 @@ final class GameEventPipeline
         if ($eventType === GameEventType::UserRegistered) {
             try {
                 $seasonResults[] = $this->seasonProcessor->ensureEnrolled($context);
-            } catch (\App\GameEngine\Exceptions\SeasonException) {
+            } catch (SeasonException) {
                 // No active season — not a blocking error
             }
         }
@@ -124,7 +131,7 @@ final class GameEventPipeline
                         $context,
                         $event->totalValuePaise,
                     );
-                } catch (\App\GameEngine\Exceptions\LeagueException) {
+                } catch (LeagueException) {
                     // Not enrolled yet — skip
                 }
             }
@@ -141,21 +148,21 @@ final class GameEventPipeline
             $xpSource = $this->resolveXPSource($event);
 
             if ($xpSource !== null) {
-                $xpResult     = $this->xpProcessor->grant($context, $xpSource, $event->sourceId());
-                $xpResults[]  = $xpResult;
+                $xpResult = $this->xpProcessor->grant($context, $xpSource, $event->sourceId());
+                $xpResults[] = $xpResult;
 
                 // ── Level stage (embedded in XP result) ───────────────────────
                 if ($xpResult->didLevelUp) {
                     for ($lvl = $xpResult->levelBefore + 1; $lvl <= $xpResult->levelAfter; $lvl++) {
-                        $levelRecord = \App\Models\Level::where('level_number', $lvl)->first();
+                        $levelRecord = Level::where('level_number', $lvl)->first();
                         $levelResults[] = new LevelResult(
-                            userId:            $context->userId(),
-                            levelBefore:       $lvl - 1,
-                            levelAfter:        $lvl,
+                            userId: $context->userId(),
+                            levelBefore: $lvl - 1,
+                            levelAfter: $lvl,
                             careerTitleBefore: $context->userLevel->career_title,
-                            careerTitleAfter:  $context->userLevel->career_title,
-                            coinReward:        $levelRecord?->coin_reward ?? 0,
-                            unlocks:           $levelRecord?->unlocks ?? [],
+                            careerTitleAfter: $context->userLevel->career_title,
+                            coinReward: $levelRecord?->coin_reward ?? 0,
+                            unlocks: $levelRecord?->unlocks ?? [],
                         );
 
                         // Level-up coin reward
@@ -190,7 +197,7 @@ final class GameEventPipeline
 
         // ── Mission stage ─────────────────────────────────────────────────────
         if ($eventType->triggersMissions() && ! empty($context->activeMissions)) {
-            $progressResults = \App\GameEngine\Actions\GrantMissionProgressAction::class;
+            $progressResults = GrantMissionProgressAction::class;
             // Delegate to MissionProcessor with the full event
             $missionResults = array_merge(
                 $missionResults,
@@ -218,15 +225,15 @@ final class GameEventPipeline
     private function resolveXPSource(GameEvent $event): ?XPSource
     {
         return match ($event->eventType()) {
-            GameEventType::TradeExecuted       => $event instanceof \App\GameEngine\Events\TradeExecutedEvent && $event->isFirstTrade
+            GameEventType::TradeExecuted => $event instanceof TradeExecutedEvent && $event->isFirstTrade
                 ? XPSource::FirstTrade
-                : ($event->side === \App\Enums\OrderSide::Buy ? XPSource::TradeBuy : XPSource::TradeSell),
+                : ($event->side === OrderSide::Buy ? XPSource::TradeBuy : XPSource::TradeSell),
             GameEventType::DailyLoginCompleted => XPSource::DailyLogin,
-            GameEventType::MissionCompleted    => XPSource::MissionCompleted,
+            GameEventType::MissionCompleted => XPSource::MissionCompleted,
             GameEventType::AchievementUnlocked => XPSource::AchievementUnlocked,
-            GameEventType::ReferralCompleted   => XPSource::ReferralJoined,
-            GameEventType::SeasonEnded         => XPSource::SeasonReward,
-            default                            => null,
+            GameEventType::ReferralCompleted => XPSource::ReferralJoined,
+            GameEventType::SeasonEnded => XPSource::SeasonReward,
+            default => null,
         };
     }
 
@@ -237,7 +244,7 @@ final class GameEventPipeline
     {
         // Directly call the action rather than going through MissionProcessor::advance()
         // to pass the full typed event for accurate criteria evaluation
-        $action = app(\App\GameEngine\Actions\GrantMissionProgressAction::class);
+        $action = app(GrantMissionProgressAction::class);
         $results = $action->execute($context, $event);
 
         // Auto-grant rewards for newly completed missions
@@ -247,7 +254,7 @@ final class GameEventPipeline
                 try {
                     $claimed = $this->missionProcessor->claimReward($context, $missionResult->userMissionId);
                     $enriched[] = $claimed;
-                } catch (\App\GameEngine\Exceptions\MissionException) {
+                } catch (MissionException) {
                     $enriched[] = $missionResult;
                 }
             } else {
@@ -272,17 +279,17 @@ final class GameEventPipeline
         float $startTime,
     ): GameResult {
         return new GameResult(
-            triggerEvent:       $event,
-            userId:             $context->userId(),
-            xpResults:          $xpResults,
-            levelResults:       $levelResults,
-            careerResults:      $careerResults,
-            missionResults:     $missionResults,
+            triggerEvent: $event,
+            userId: $context->userId(),
+            xpResults: $xpResults,
+            levelResults: $levelResults,
+            careerResults: $careerResults,
+            missionResults: $missionResults,
             achievementResults: $achievementResults,
-            leagueResults:      $leagueResults,
-            seasonResults:      $seasonResults,
-            rewardResults:      $rewardResults,
-            processingTimeMs:   round((microtime(true) - $startTime) * 1000, 2),
+            leagueResults: $leagueResults,
+            seasonResults: $seasonResults,
+            rewardResults: $rewardResults,
+            processingTimeMs: round((microtime(true) - $startTime) * 1000, 2),
         );
     }
 }

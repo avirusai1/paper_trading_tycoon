@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Validators;
@@ -24,7 +25,7 @@ final class FeatureGateValidator implements RewardValidatorContract
             return;
         }
 
-        $flagKey = 'rewards.enabled.' . $request->rewardType->value;
+        $flagKey = 'rewards.enabled.'.$request->rewardType->value;
 
         // If the feature flag explicitly false, reject.
         // Missing key = enabled by default.

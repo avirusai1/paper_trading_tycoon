@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\DTOs;
@@ -18,39 +19,39 @@ use App\RewardEngine\Enums\RewardType;
 final readonly class RewardRequest
 {
     /**
-     * @param  int              $userId          Target player.
-     * @param  RewardType       $rewardType      What is being granted.
-     * @param  RewardSource     $source          Which system originated the reward.
-     * @param  string           $sourceId        Primary key of the originating entity.
-     * @param  string           $idempotencyKey  Unique key for duplicate detection.
-     * @param  array<string,mixed> $metadata     Extra context passed to calculators and strategies.
-     *                                           Keys: 'store_item_id', 'season_id', 'referrer_id', etc.
-     * @param  int|null         $overrideAmount  When set, bypasses Rules Engine amount lookup.
-     *                                           Admin grants may set explicit coin/XP amounts.
-     * @param  bool             $dryRun          If true, pipeline runs but no DB writes occur.
+     * @param  int  $userId  Target player.
+     * @param  RewardType  $rewardType  What is being granted.
+     * @param  RewardSource  $source  Which system originated the reward.
+     * @param  string  $sourceId  Primary key of the originating entity.
+     * @param  string  $idempotencyKey  Unique key for duplicate detection.
+     * @param  array<string,mixed>  $metadata  Extra context passed to calculators and strategies.
+     *                                         Keys: 'store_item_id', 'season_id', 'referrer_id', etc.
+     * @param  int|null  $overrideAmount  When set, bypasses Rules Engine amount lookup.
+     *                                    Admin grants may set explicit coin/XP amounts.
+     * @param  bool  $dryRun  If true, pipeline runs but no DB writes occur.
      */
     public function __construct(
-        public readonly int         $userId,
-        public readonly RewardType  $rewardType,
+        public readonly int $userId,
+        public readonly RewardType $rewardType,
         public readonly RewardSource $source,
-        public readonly string      $sourceId,
-        public readonly string      $idempotencyKey,
-        public readonly array       $metadata       = [],
-        public readonly ?int        $overrideAmount = null,
-        public readonly bool        $dryRun         = false,
+        public readonly string $sourceId,
+        public readonly string $idempotencyKey,
+        public readonly array $metadata = [],
+        public readonly ?int $overrideAmount = null,
+        public readonly bool $dryRun = false,
     ) {}
 
     /**
      * Convenience factory — derives idempotency key from parts.
      */
     public static function make(
-        int          $userId,
-        RewardType   $rewardType,
+        int $userId,
+        RewardType $rewardType,
         RewardSource $source,
-        string       $sourceId,
-        array        $metadata       = [],
-        ?int         $overrideAmount = null,
-        bool         $dryRun         = false,
+        string $sourceId,
+        array $metadata = [],
+        ?int $overrideAmount = null,
+        bool $dryRun = false,
     ): self {
         $idempotencyKey = implode(':', [
             $source->value,
@@ -60,14 +61,14 @@ final readonly class RewardRequest
         ]);
 
         return new self(
-            userId:          $userId,
-            rewardType:      $rewardType,
-            source:          $source,
-            sourceId:        $sourceId,
-            idempotencyKey:  $idempotencyKey,
-            metadata:        $metadata,
-            overrideAmount:  $overrideAmount,
-            dryRun:          $dryRun,
+            userId: $userId,
+            rewardType: $rewardType,
+            source: $source,
+            sourceId: $sourceId,
+            idempotencyKey: $idempotencyKey,
+            metadata: $metadata,
+            overrideAmount: $overrideAmount,
+            dryRun: $dryRun,
         );
     }
 
@@ -77,14 +78,14 @@ final readonly class RewardRequest
     public function asDryRun(): self
     {
         return new self(
-            userId:          $this->userId,
-            rewardType:      $this->rewardType,
-            source:          $this->source,
-            sourceId:        $this->sourceId,
-            idempotencyKey:  $this->idempotencyKey,
-            metadata:        $this->metadata,
-            overrideAmount:  $this->overrideAmount,
-            dryRun:          true,
+            userId: $this->userId,
+            rewardType: $this->rewardType,
+            source: $this->source,
+            sourceId: $this->sourceId,
+            idempotencyKey: $this->idempotencyKey,
+            metadata: $this->metadata,
+            overrideAmount: $this->overrideAmount,
+            dryRun: true,
         );
     }
 

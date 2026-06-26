@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\GameEngine;
 
-use App\GameEngine\Contracts\GameRuleProviderContract;
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\GameRuleProviderContract;
 use App\GameEngine\Enums\PlayerState;
 use App\GameEngine\Support\XPMultiplierCalculator;
 use App\Models\User;
@@ -26,12 +27,12 @@ use Tests\TestCase;
 final class XPMultiplierCalculatorTest extends TestCase
 {
     private GameRuleProviderContract $rules;
-    private XPMultiplierCalculator   $calculator;
+    private XPMultiplierCalculator $calculator;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->rules      = Mockery::mock(GameRuleProviderContract::class);
+        $this->rules = Mockery::mock(GameRuleProviderContract::class);
         $this->calculator = new XPMultiplierCalculator($this->rules);
 
         // Default rules for tests that don't override them
@@ -119,36 +120,36 @@ final class XPMultiplierCalculatorTest extends TestCase
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private function makeContext(
-        bool  $isPremium,
-        int   $streak,
+        bool $isPremium,
+        int $streak,
         float $itemXpBoost = 1.0,
     ): GameContext {
-        $user             = new User(['name' => 'Test', 'email' => 'test@example.com']);
+        $user = new User(['name' => 'Test', 'email' => 'test@example.com']);
         $user->is_premium = $isPremium;
-        $user->status     = 'active';
-        $user->id         = 1;
+        $user->status = 'active';
+        $user->id = 1;
 
-        $wallet          = new Wallet();
+        $wallet = new Wallet;
         $wallet->coin_balance = 0;
 
-        $userLevel          = new UserLevel();
+        $userLevel = new UserLevel;
         $userLevel->current_level = 1;
-        $userLevel->current_xp    = 0;
+        $userLevel->current_xp = 0;
 
         return new GameContext(
-            user:                   $user,
-            playerState:            $isPremium ? PlayerState::ActivePremium : PlayerState::Active,
-            wallet:                 $wallet,
-            userLevel:              $userLevel,
-            currentLeague:          null,
-            league:                 null,
-            activeSeason:           null,
-            activeMissions:         [],
+            user: $user,
+            playerState: $isPremium ? PlayerState::ActivePremium : PlayerState::Active,
+            wallet: $wallet,
+            userLevel: $userLevel,
+            currentLeague: null,
+            league: null,
+            activeSeason: null,
+            activeMissions: [],
             unlockedAchievementIds: [],
-            loginStreakDays:        $streak,
-            activeMultipliers:      ['xp' => $itemXpBoost, 'coins' => 1.0],
-            featureFlags:           [],
-            builtAt:                microtime(true),
+            loginStreakDays: $streak,
+            activeMultipliers: ['xp' => $itemXpBoost, 'coins' => 1.0],
+            featureFlags: [],
+            builtAt: microtime(true),
         );
     }
 }

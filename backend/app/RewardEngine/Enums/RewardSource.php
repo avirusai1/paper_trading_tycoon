@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Enums;
@@ -11,19 +12,19 @@ namespace App\RewardEngine\Enums;
  */
 enum RewardSource: string
 {
-    case Mission        = 'mission';
-    case Achievement    = 'achievement';
-    case LevelUp        = 'level_up';
-    case DailyLogin     = 'daily_login';
-    case Season         = 'season';
-    case Referral       = 'referral';
-    case Admin          = 'admin';
-    case Trade          = 'trade';
-    case Streak         = 'streak';
-    case StoreRefund    = 'store_refund';
-    case FeatureUnlock  = 'feature_unlock';
-    case Tutorial       = 'tutorial';
-    case Event          = 'event';       // Time-limited special events
+    case Mission = 'mission';
+    case Achievement = 'achievement';
+    case LevelUp = 'level_up';
+    case DailyLogin = 'daily_login';
+    case Season = 'season';
+    case Referral = 'referral';
+    case Admin = 'admin';
+    case Trade = 'trade';
+    case Streak = 'streak';
+    case StoreRefund = 'store_refund';
+    case FeatureUnlock = 'feature_unlock';
+    case Tutorial = 'tutorial';
+    case Event = 'event';       // Time-limited special events
 
     /**
      * Sources that must be validated against daily limits.
@@ -33,8 +34,8 @@ enum RewardSource: string
         return match ($this) {
             self::Trade,
             self::DailyLogin,
-            self::Streak    => true,
-            default          => false,
+            self::Streak => true,
+            default => false,
         };
     }
 

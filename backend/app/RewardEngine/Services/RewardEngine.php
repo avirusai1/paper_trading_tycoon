@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Services;
@@ -9,8 +10,11 @@ use App\RewardEngine\Contracts\RewardEngineContract;
 use App\RewardEngine\DTOs\RewardBatchResult;
 use App\RewardEngine\DTOs\RewardEngineResult;
 use App\RewardEngine\DTOs\RewardRequest;
+use App\RewardEngine\Enums\RewardSource;
 use App\RewardEngine\Enums\RewardStatus;
+use App\RewardEngine\Enums\RewardType;
 use App\RewardEngine\Exceptions\RewardEngineException;
+use App\RewardEngine\Exceptions\RewardRollbackException;
 use App\RewardEngine\Pipelines\RewardPipeline;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -41,8 +45,8 @@ final class RewardEngine implements RewardEngineContract
 {
     public function __construct(
         private readonly RewardContextBuilderContract $contextBuilder,
-        private readonly RewardPipeline              $pipeline,
-        private readonly RollbackRewardAction        $rollbackAction,
+        private readonly RewardPipeline $pipeline,
+        private readonly RollbackRewardAction $rollbackAction,
     ) {}
 
     /**
@@ -53,24 +57,24 @@ final class RewardEngine implements RewardEngineContract
         $start = microtime(true);
 
         Log::info('[RewardEngine] distribute() called', [
-            'user_id'     => $request->userId,
+            'user_id' => $request->userId,
             'reward_type' => $request->rewardType->value,
-            'source'      => $request->source->value,
-            'key'         => $request->idempotencyKey,
-            'dry_run'     => $request->dryRun,
+            'source' => $request->source->value,
+            'key' => $request->idempotencyKey,
+            'dry_run' => $request->dryRun,
         ]);
 
         try {
             $context = $this->contextBuilder->build($request);
-            $result  = $this->pipeline->execute($request, $context);
+            $result = $this->pipeline->execute($request, $context);
 
             $ms = round((microtime(true) - $start) * 1000, 2);
 
             Log::info('[RewardEngine] distribute() complete', [
-                'user_id'  => $request->userId,
-                'status'   => $result->status->value,
-                'xp'       => $result->totalXPGranted,
-                'coins'    => $result->totalCoinsGranted,
+                'user_id' => $request->userId,
+                'status' => $result->status->value,
+                'xp' => $result->totalXPGranted,
+                'coins' => $result->totalCoinsGranted,
                 'total_ms' => $ms,
             ]);
 
@@ -78,15 +82,16 @@ final class RewardEngine implements RewardEngineContract
         } catch (RewardEngineException $e) {
             Log::error('[RewardEngine] distribute() failed', [
                 'user_id' => $request->userId,
-                'code'    => $e->errorCode(),
+                'code' => $e->errorCode(),
                 'message' => $e->getMessage(),
             ]);
+
             throw $e;
         } catch (Throwable $e) {
             Log::error('[RewardEngine] Unexpected error', [
-                'user_id'   => $request->userId,
+                'user_id' => $request->userId,
                 'exception' => $e::class,
-                'message'   => $e->getMessage(),
+                'message' => $e->getMessage(),
             ]);
 
             throw new RewardEngineException(
@@ -103,7 +108,7 @@ final class RewardEngine implements RewardEngineContract
      */
     public function distributeBatch(array $requests): RewardBatchResult
     {
-        $start   = microtime(true);
+        $start = microtime(true);
         $results = [];
 
         foreach ($requests as $request) {
@@ -113,20 +118,20 @@ final class RewardEngine implements RewardEngineContract
                 // In batch mode, individual failures do not abort the batch.
                 // Return a Failed result for this request and continue.
                 Log::warning('[RewardEngine] Batch item failed', [
-                    'user_id'   => $request->userId,
-                    'key'       => $request->idempotencyKey,
+                    'user_id' => $request->userId,
+                    'key' => $request->idempotencyKey,
                     'exception' => $e->getMessage(),
                 ]);
 
                 $results[] = new RewardEngineResult(
-                    idempotencyKey:      $request->idempotencyKey,
-                    userId:              $request->userId,
-                    status:              RewardStatus::Failed,
-                    rewardType:          $request->rewardType,
-                    totalXPGranted:      0,
-                    totalCoinsGranted:   0,
+                    idempotencyKey: $request->idempotencyKey,
+                    userId: $request->userId,
+                    status: RewardStatus::Failed,
+                    rewardType: $request->rewardType,
+                    totalXPGranted: 0,
+                    totalCoinsGranted: 0,
                     distributionResults: [],
-                    failureReason:       $e->getMessage(),
+                    failureReason: $e->getMessage(),
                 );
             }
         }
@@ -136,8 +141,8 @@ final class RewardEngine implements RewardEngineContract
         $userId = $requests[0]->userId ?? 0;
 
         Log::info('[RewardEngine] Batch complete', [
-            'user_id'  => $userId,
-            'total'    => count($results),
+            'user_id' => $userId,
+            'total' => count($results),
             'total_ms' => $ms,
         ]);
 
@@ -145,22 +150,22 @@ final class RewardEngine implements RewardEngineContract
     }
 
     /**
-     * @throws \App\RewardEngine\Exceptions\RewardRollbackException
+     * @throws RewardRollbackException
      */
     public function rollback(string $idempotencyKey, int $userId): RewardEngineResult
     {
         Log::info('[RewardEngine] rollback() called', [
-            'user_id'         => $userId,
+            'user_id' => $userId,
             'idempotency_key' => $idempotencyKey,
         ]);
 
         // Build a synthetic rollback request to get a context
         $rollbackRequest = new RewardRequest(
-            userId:         $userId,
-            rewardType:     \App\RewardEngine\Enums\RewardType::AdminReward,
-            source:         \App\RewardEngine\Enums\RewardSource::Admin,
-            sourceId:       $idempotencyKey,
-            idempotencyKey: $idempotencyKey . ':rollback',
+            userId: $userId,
+            rewardType: RewardType::AdminReward,
+            source: RewardSource::Admin,
+            sourceId: $idempotencyKey,
+            idempotencyKey: $idempotencyKey.':rollback',
         );
 
         $context = $this->contextBuilder->build($rollbackRequest);
@@ -168,12 +173,12 @@ final class RewardEngine implements RewardEngineContract
         $distributionResult = $this->rollbackAction->execute($idempotencyKey, $context);
 
         return new RewardEngineResult(
-            idempotencyKey:      $idempotencyKey,
-            userId:              $userId,
-            status:              RewardStatus::RolledBack,
-            rewardType:          $distributionResult->rewardType,
-            totalXPGranted:      0,
-            totalCoinsGranted:   0,
+            idempotencyKey: $idempotencyKey,
+            userId: $userId,
+            status: RewardStatus::RolledBack,
+            rewardType: $distributionResult->rewardType,
+            totalXPGranted: 0,
+            totalCoinsGranted: 0,
             distributionResults: [$distributionResult],
         );
     }

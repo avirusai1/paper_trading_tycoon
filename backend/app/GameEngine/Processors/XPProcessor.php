@@ -1,14 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Processors;
 
 use App\GameEngine\Actions\GrantXPAction;
-use App\GameEngine\Contracts\XPProcessorContract;
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\XPProcessorContract;
 use App\GameEngine\DTOs\XPResult;
 use App\GameEngine\Enums\XPSource;
-use App\GameEngine\Exceptions\XPException;
 use App\GameEngine\Support\DailyCapTracker;
 
 /**
@@ -21,15 +21,15 @@ use App\GameEngine\Support\DailyCapTracker;
 final class XPProcessor implements XPProcessorContract
 {
     public function __construct(
-        private readonly GrantXPAction   $grantXPAction,
+        private readonly GrantXPAction $grantXPAction,
         private readonly DailyCapTracker $capTracker,
     ) {}
 
     public function grant(
         GameContext $context,
-        XPSource    $source,
-        string      $sourceId,
-        ?int        $overrideAmount = null,
+        XPSource $source,
+        string $sourceId,
+        ?int $overrideAmount = null,
     ): XPResult {
         return $this->grantXPAction->execute($context, $source, $sourceId, $overrideAmount);
     }

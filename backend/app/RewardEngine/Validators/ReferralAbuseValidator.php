@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Validators;
@@ -42,9 +43,10 @@ final class ReferralAbuseValidator implements RewardValidatorContract
         // Self-referral guard
         if ($referrerId !== null && (int) $referrerId === $request->userId) {
             Log::warning('[RewardEngine] Self-referral attempt blocked', [
-                'user_id'     => $request->userId,
+                'user_id' => $request->userId,
                 'referral_id' => $referralId,
             ]);
+
             throw RewardValidationException::referralAbuse($request->userId);
         }
 
@@ -62,9 +64,10 @@ final class ReferralAbuseValidator implements RewardValidatorContract
         // Check referred user is not flagged for fraud
         if ((bool) $referral->is_fraud_flagged) {
             Log::warning('[RewardEngine] Fraud-flagged referral blocked', [
-                'user_id'     => $request->userId,
+                'user_id' => $request->userId,
                 'referral_id' => $referralId,
             ]);
+
             throw RewardValidationException::referralAbuse($request->userId);
         }
     }

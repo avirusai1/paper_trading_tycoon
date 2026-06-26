@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
 use App\Enums\OrderSide;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,13 +27,13 @@ final class Order extends Model
     protected function casts(): array
     {
         return [
-            'side'                      => OrderSide::class,
-            'quantity'                  => 'integer',
-            'filled_quantity'           => 'integer',
-            'limit_price_paise'         => 'integer',
-            'stop_price_paise'          => 'integer',
-            'average_fill_price_paise'  => 'integer',
-            'expires_at'                => 'datetime',
+            'side' => OrderSide::class,
+            'quantity' => 'integer',
+            'filled_quantity' => 'integer',
+            'limit_price_paise' => 'integer',
+            'stop_price_paise' => 'integer',
+            'average_fill_price_paise' => 'integer',
+            'expires_at' => 'datetime',
         ];
     }
 
@@ -55,12 +57,12 @@ final class Order extends Model
         return $this->hasMany(Trade::class);
     }
 
-    public function scopePending(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopePending(Builder $query): Builder
     {
         return $query->where('status', 'pending');
     }
 
-    public function scopeOpen(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeOpen(Builder $query): Builder
     {
         return $query->whereIn('status', ['pending', 'open', 'partially_filled']);
     }

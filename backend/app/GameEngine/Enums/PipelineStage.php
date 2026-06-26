@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Enums;
@@ -11,12 +12,12 @@ namespace App\GameEngine\Enums;
  */
 enum PipelineStage: string
 {
-    case XP          = 'xp';
-    case Level       = 'level';
-    case Career      = 'career';
-    case Missions    = 'missions';
+    case XP = 'xp';
+    case Level = 'level';
+    case Career = 'career';
+    case Missions = 'missions';
     case Achievements = 'achievements';
-    case League      = 'league';
-    case Season      = 'season';
-    case Rewards     = 'rewards';
+    case League = 'league';
+    case Season = 'season';
+    case Rewards = 'rewards';
 }

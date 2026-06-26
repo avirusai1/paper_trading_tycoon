@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -22,14 +23,14 @@ final class PortfolioSnapshot extends Model
     protected function casts(): array
     {
         return [
-            'virtual_cash_paise'          => 'integer',
-            'holdings_value_paise'        => 'integer',
+            'virtual_cash_paise' => 'integer',
+            'holdings_value_paise' => 'integer',
             'total_portfolio_value_paise' => 'integer',
-            'total_pnl_paise'             => 'integer',
-            'total_pnl_percent'           => 'float',
-            'total_holdings_count'        => 'integer',
-            'snapshot_date'               => 'date',
-            'taken_at'                    => 'datetime',
+            'total_pnl_paise' => 'integer',
+            'total_pnl_percent' => 'float',
+            'total_holdings_count' => 'integer',
+            'snapshot_date' => 'date',
+            'taken_at' => 'datetime',
         ];
     }
 

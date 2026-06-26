@@ -1,11 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Contracts;
 
-use App\RewardEngine\DTOs\RewardRequest;
 use App\RewardEngine\DTOs\RewardBatchResult;
 use App\RewardEngine\DTOs\RewardEngineResult;
+use App\RewardEngine\DTOs\RewardRequest;
+use App\RewardEngine\Exceptions\RewardCalculationException;
+use App\RewardEngine\Exceptions\RewardDistributionException;
+use App\RewardEngine\Exceptions\RewardEngineException;
+use App\RewardEngine\Exceptions\RewardRollbackException;
+use App\RewardEngine\Exceptions\RewardValidationException;
 
 /**
  * Primary entry point for the Reward Engine subsystem.
@@ -22,10 +28,10 @@ interface RewardEngineContract
     /**
      * Process a single reward request through the full pipeline.
      *
-     * @throws \App\RewardEngine\Exceptions\RewardValidationException   Validation failed.
-     * @throws \App\RewardEngine\Exceptions\RewardCalculationException  Calculation failed.
-     * @throws \App\RewardEngine\Exceptions\RewardDistributionException Distribution failed.
-     * @throws \App\RewardEngine\Exceptions\RewardEngineException       Unexpected error.
+     * @throws RewardValidationException Validation failed.
+     * @throws RewardCalculationException Calculation failed.
+     * @throws RewardDistributionException Distribution failed.
+     * @throws RewardEngineException Unexpected error.
      */
     public function distribute(RewardRequest $request): RewardEngineResult;
 
@@ -46,7 +52,7 @@ interface RewardEngineContract
      * Issues compensating transactions for ledger-backed reward types.
      * Non-ledger types (badges, titles) are revoked directly.
      *
-     * @throws \App\RewardEngine\Exceptions\RewardRollbackException  If rollback fails partially.
+     * @throws RewardRollbackException If rollback fails partially.
      */
     public function rollback(string $idempotencyKey, int $userId): RewardEngineResult;
 }

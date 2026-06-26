@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Responses\ApiResponse;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -46,7 +47,7 @@ abstract class BaseApiController extends Controller
     /**
      * Return a standardised paginated collection response.
      *
-     * @param  \Illuminate\Contracts\Pagination\LengthAwarePaginator  $paginator
+     * @param  LengthAwarePaginator  $paginator
      */
     protected function paginated(mixed $paginator, string $message = ''): JsonResponse
     {

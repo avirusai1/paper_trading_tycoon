@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -10,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 final class FeatureFlag extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'key', 'name', 'description', 'is_enabled', 'rollout_percentage',
         'premium_only', 'allowed_user_ids', 'group',
@@ -18,10 +21,10 @@ final class FeatureFlag extends Model
     protected function casts(): array
     {
         return [
-            'is_enabled'         => 'boolean',
+            'is_enabled' => 'boolean',
             'rollout_percentage' => 'integer',
-            'premium_only'       => 'boolean',
-            'allowed_user_ids'   => 'array',
+            'premium_only' => 'boolean',
+            'allowed_user_ids' => 'array',
         ];
     }
 
@@ -42,6 +45,7 @@ final class FeatureFlag extends Model
         if ($this->rollout_percentage < 100) {
             return (crc32("flag_{$user->id}") % 100) < $this->rollout_percentage;
         }
+
         return true;
     }
 }

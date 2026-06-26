@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Processors;
 
 use App\GameEngine\Actions\GrantLeagueProgressAction;
-use App\GameEngine\Contracts\LeagueProcessorContract;
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\LeagueProcessorContract;
 use App\GameEngine\DTOs\LeagueResult;
 
 /**

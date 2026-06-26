@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,7 +24,7 @@ final class UserDevice extends Model
     protected function casts(): array
     {
         return [
-            'is_active'    => 'boolean',
+            'is_active' => 'boolean',
             'last_seen_at' => 'datetime',
         ];
     }
@@ -32,7 +34,7 @@ final class UserDevice extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function scopeActive(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }

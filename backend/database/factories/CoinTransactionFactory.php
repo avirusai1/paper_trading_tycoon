@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Factories;
@@ -19,12 +20,12 @@ final class CoinTransactionFactory extends Factory
         $amount = $this->faker->numberBetween(10, 500);
 
         return [
-            'user_id'      => User::factory(),
-            'amount'       => $amount,
-            'source_type'  => $source->value,
-            'source_id'    => Str::uuid()->toString(),
+            'user_id' => User::factory(),
+            'amount' => $amount,
+            'source_type' => $source->value,
+            'source_id' => Str::uuid()->toString(),
             'balance_after' => $this->faker->numberBetween($amount, 5000),
-            'description'  => "Coins from {$source->value}",
+            'description' => "Coins from {$source->value}",
         ];
     }
 

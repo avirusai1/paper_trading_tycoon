@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\DTOs;
@@ -14,15 +15,15 @@ use App\RewardEngine\Enums\RewardType;
 final readonly class StrategyResult
 {
     public function __construct(
-        public readonly RewardType   $rewardType,
+        public readonly RewardType $rewardType,
         public readonly RewardStatus $status,
-        public readonly string       $idempotencyKey,
-        public readonly int          $userId,
-        public readonly int          $xpGranted    = 0,
-        public readonly int          $coinsGranted = 0,
-        public readonly array        $extras       = [],
-        public readonly bool         $rolledBack   = false,
-        public readonly ?string      $failureReason = null,
+        public readonly string $idempotencyKey,
+        public readonly int $userId,
+        public readonly int $xpGranted = 0,
+        public readonly int $coinsGranted = 0,
+        public readonly array $extras = [],
+        public readonly bool $rolledBack = false,
+        public readonly ?string $failureReason = null,
     ) {}
 
     public function succeeded(): bool
@@ -38,11 +39,11 @@ final readonly class StrategyResult
     public static function rolledBack(RewardType $type, string $idempotencyKey, int $userId): self
     {
         return new self(
-            rewardType:     $type,
-            status:         RewardStatus::RolledBack,
+            rewardType: $type,
+            status: RewardStatus::RolledBack,
             idempotencyKey: $idempotencyKey,
-            userId:         $userId,
-            rolledBack:     true,
+            userId: $userId,
+            rolledBack: true,
         );
     }
 }

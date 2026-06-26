@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * Module repositories extend this class and override only what they need.
  *
  * @template TModel of Model
+ *
  * @implements BaseRepositoryContract<TModel>
  */
 abstract class BaseEloquentRepository implements BaseRepositoryContract

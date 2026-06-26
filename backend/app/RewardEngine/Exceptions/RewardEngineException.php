@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Exceptions;
@@ -15,17 +16,17 @@ use App\Exceptions\DomainException;
 class RewardEngineException extends DomainException
 {
     public function __construct(
-        string                    $message,
-        private readonly string   $code,
-        private readonly int      $status = 422,
-        ?\Throwable               $previous = null,
+        string $message,
+        private readonly string $errorCode,
+        private readonly int $status = 422,
+        ?\Throwable $previous = null,
     ) {
         parent::__construct($message, 0, $previous);
     }
 
     public function errorCode(): string
     {
-        return $this->code;
+        return $this->errorCode;
     }
 
     public function httpStatus(): int

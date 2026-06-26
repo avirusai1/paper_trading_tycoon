@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\DTOs;
@@ -12,15 +13,15 @@ namespace App\GameEngine\DTOs;
 final readonly class LevelResult
 {
     public function __construct(
-        public readonly int    $userId,
-        public readonly int    $levelBefore,
-        public readonly int    $levelAfter,
+        public readonly int $userId,
+        public readonly int $levelBefore,
+        public readonly int $levelAfter,
         public readonly string $careerTitleBefore,
         public readonly string $careerTitleAfter,
         /** Coin reward for reaching this level, from the levels table. */
-        public readonly int    $coinReward,
+        public readonly int $coinReward,
         /** Feature/content unlocks for the new level (from levels.unlocks JSON). */
-        public readonly array  $unlocks,
+        public readonly array $unlocks,
     ) {}
 
     public function didChangeCareerTitle(): bool

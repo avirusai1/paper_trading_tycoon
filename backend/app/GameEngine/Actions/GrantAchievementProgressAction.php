@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Actions;
@@ -6,7 +7,6 @@ namespace App\GameEngine\Actions;
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\AchievementResult;
 use App\GameEngine\Events\GameEvent;
-use App\GameEngine\Exceptions\AchievementException;
 use App\GameEngine\Support\AchievementCriteriaEvaluator;
 use App\Models\Achievement;
 use App\Models\UserAchievement;
@@ -31,7 +31,7 @@ final class GrantAchievementProgressAction
     public function execute(GameContext $context, GameEvent $event): array
     {
         $achievements = Achievement::where('is_active', true)->get();
-        $results      = [];
+        $results = [];
 
         foreach ($achievements as $achievement) {
             // Skip non-repeatable achievements already unlocked
@@ -53,15 +53,15 @@ final class GrantAchievementProgressAction
                 if ($existing !== null && ! $achievement->is_repeatable) {
                     // Beaten to the lock — already unlocked
                     return new AchievementResult(
-                        userId:          $context->userId(),
-                        achievementId:   $achievement->id,
-                        achievementKey:  $achievement->key,
+                        userId: $context->userId(),
+                        achievementId: $achievement->id,
+                        achievementKey: $achievement->key,
                         achievementName: $achievement->name,
-                        tier:            $achievement->tier,
-                        unlockCount:     $existing->unlock_count,
-                        justUnlocked:    false,
-                        xpReward:        0,
-                        coinReward:      0,
+                        tier: $achievement->tier,
+                        unlockCount: $existing->unlock_count,
+                        justUnlocked: false,
+                        xpReward: 0,
+                        coinReward: 0,
                     );
                 }
 
@@ -72,25 +72,25 @@ final class GrantAchievementProgressAction
                     $unlockCount = $existing->unlock_count;
                 } else {
                     UserAchievement::create([
-                        'user_id'          => $context->userId(),
-                        'achievement_id'   => $achievement->id,
-                        'unlock_count'     => 1,
-                        'first_unlocked_at'=> now(),
+                        'user_id' => $context->userId(),
+                        'achievement_id' => $achievement->id,
+                        'unlock_count' => 1,
+                        'first_unlocked_at' => now(),
                         'last_unlocked_at' => now(),
                     ]);
                     $unlockCount = 1;
                 }
 
                 return new AchievementResult(
-                    userId:          $context->userId(),
-                    achievementId:   $achievement->id,
-                    achievementKey:  $achievement->key,
+                    userId: $context->userId(),
+                    achievementId: $achievement->id,
+                    achievementKey: $achievement->key,
                     achievementName: $achievement->name,
-                    tier:            $achievement->tier,
-                    unlockCount:     $unlockCount,
-                    justUnlocked:    true,
-                    xpReward:        $achievement->xp_reward,
-                    coinReward:      $achievement->coin_reward,
+                    tier: $achievement->tier,
+                    unlockCount: $unlockCount,
+                    justUnlocked: true,
+                    xpReward: $achievement->xp_reward,
+                    coinReward: $achievement->coin_reward,
                 );
             });
 

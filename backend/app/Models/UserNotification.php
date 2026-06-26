@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -21,10 +22,10 @@ final class UserNotification extends Model
     protected function casts(): array
     {
         return [
-            'is_read'   => 'boolean',
+            'is_read' => 'boolean',
             'push_sent' => 'boolean',
-            'sent_at'   => 'datetime',
-            'read_at'   => 'datetime',
+            'sent_at' => 'datetime',
+            'read_at' => 'datetime',
         ];
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine;
@@ -8,8 +9,8 @@ use App\Events\CoinsAwarded;
 use App\Events\LevelUp;
 use App\Events\SeasonRewardGranted;
 use App\Events\XPGranted;
-use App\GameEngine\Contracts\GameEngineContract;
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\GameEngineContract;
 use App\GameEngine\DTOs\GameResult;
 use App\GameEngine\Events\GameEvent;
 use App\GameEngine\Exceptions\GameEngineException;
@@ -43,7 +44,7 @@ final class GameEngine implements GameEngineContract
 {
     public function __construct(
         private readonly GameContextBuilder $contextBuilder,
-        private readonly GameEventPipeline  $pipeline,
+        private readonly GameEventPipeline $pipeline,
     ) {}
 
     /**
@@ -54,47 +55,49 @@ final class GameEngine implements GameEngineContract
         $startTime = microtime(true);
 
         Log::info('[GameEngine] Processing event', [
-            'event_type'      => $event->eventType()->value,
-            'user_id'         => $event->userId(),
+            'event_type' => $event->eventType()->value,
+            'user_id' => $event->userId(),
             'idempotency_key' => $event->idempotencyKey(),
         ]);
 
         try {
             $context = $this->contextBuilder->build($event->userId());
-            $result  = $this->pipeline->execute($context, $event);
+            $result = $this->pipeline->execute($context, $event);
 
             $this->publishDomainEvents($result);
 
             $elapsed = round((microtime(true) - $startTime) * 1000, 1);
 
             Log::info('[GameEngine] Event processed', [
-                'user_id'          => $event->userId(),
-                'event_type'       => $event->eventType()->value,
-                'xp_gained'        => $result->totalXPGranted(),
-                'coins_gained'     => $result->totalCoinsGranted(),
-                'level_up'         => $result->didLevelUp(),
-                'missions_done'    => $result->missionsCompleted(),
-                'achievements_done'=> $result->achievementsUnlocked(),
-                'pipeline_ms'      => $result->processingTimeMs,
-                'total_ms'         => $elapsed,
+                'user_id' => $event->userId(),
+                'event_type' => $event->eventType()->value,
+                'xp_gained' => $result->totalXPGranted(),
+                'coins_gained' => $result->totalCoinsGranted(),
+                'level_up' => $result->didLevelUp(),
+                'missions_done' => $result->missionsCompleted(),
+                'achievements_done' => $result->achievementsUnlocked(),
+                'pipeline_ms' => $result->processingTimeMs,
+                'total_ms' => $elapsed,
             ]);
 
             return $result;
         } catch (GameEngineException $e) {
             Log::error('[GameEngine] Processing failed', [
-                'user_id'    => $event->userId(),
+                'user_id' => $event->userId(),
                 'event_type' => $event->eventType()->value,
-                'error'      => $e->errorCode(),
-                'message'    => $e->getMessage(),
+                'error' => $e->errorCode(),
+                'message' => $e->getMessage(),
             ]);
+
             throw $e;
         } catch (Throwable $e) {
             Log::error('[GameEngine] Unexpected error', [
-                'user_id'    => $event->userId(),
+                'user_id' => $event->userId(),
                 'event_type' => $event->eventType()->value,
-                'exception'  => $e::class,
-                'message'    => $e->getMessage(),
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
             ]);
+
             throw new GameEngineException(
                 "Unexpected error processing game event: {$e->getMessage()}",
                 'game_engine_unexpected_error',

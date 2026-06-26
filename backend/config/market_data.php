@@ -30,6 +30,10 @@ return [
             'base_url' => env('STOCK_DATA_BASE_URL', 'https://www.alphavantage.co/query'),
             'api_key' => env('STOCK_DATA_API_KEY'),
         ],
+        'twelve_data' => [
+            'base_url' => env('TWELVE_DATA_BASE_URL', 'https://api.twelvedata.com'),
+            'api_key' => env('TWELVE_DATA_API_KEY'),
+        ],
     ],
 
     /*

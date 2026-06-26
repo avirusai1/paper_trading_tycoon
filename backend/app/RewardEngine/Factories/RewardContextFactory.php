@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Factories;
@@ -9,10 +10,9 @@ use App\Models\UserInventory;
 use App\Models\UserLeague;
 use App\Models\UserLevel;
 use App\Models\Wallet;
-use App\RewardEngine\Contracts\RewardContextBuilderContract;
 use App\RewardEngine\Contexts\RewardContext;
+use App\RewardEngine\Contracts\RewardContextBuilderContract;
 use App\RewardEngine\DTOs\RewardRequest;
-use App\RewardEngine\Enums\MultiplierType;
 use App\RewardEngine\Exceptions\RewardEngineException;
 use App\Services\Features\FeatureFlagService;
 use Carbon\Carbon;
@@ -40,7 +40,7 @@ final class RewardContextFactory implements RewardContextBuilderContract
     ) {}
 
     /**
-     * @throws RewardEngineException  If the user is not found.
+     * @throws RewardEngineException If the user is not found.
      */
     public function build(RewardRequest $request): RewardContext
     {
@@ -91,13 +91,13 @@ final class RewardContextFactory implements RewardContextBuilderContract
             ->all();
 
         $isPremium = $this->resolvePremiumStatus($user);
-        $isBanned  = $this->resolveBannedStatus($user);
+        $isBanned = $this->resolveBannedStatus($user);
 
         // Load all feature flags from cache
         $flags = $this->featureFlags->all();
 
         // Resolve IST weekend
-        $nowIST    = Carbon::now('Asia/Kolkata');
+        $nowIST = Carbon::now('Asia/Kolkata');
         $isWeekend = $nowIST->isWeekend();
 
         // Multipliers are resolved lazily by MultiplierResolver during calculation.
@@ -105,19 +105,19 @@ final class RewardContextFactory implements RewardContextBuilderContract
         $multipliers = [];
 
         return new RewardContext(
-            user:          $user,
-            wallet:        $wallet,
-            userLevel:     $userLevel,
-            activeSeason:  $activeSeason,
-            userLeague:    $userLeague,
-            featureFlags:  $flags,
-            multipliers:   $multipliers,
+            user: $user,
+            wallet: $wallet,
+            userLevel: $userLevel,
+            activeSeason: $activeSeason,
+            userLeague: $userLeague,
+            featureFlags: $flags,
+            multipliers: $multipliers,
             equippedItems: $equippedItems,
-            isPremium:     $isPremium,
-            isBanned:      $isBanned,
-            builtAt:       Carbon::now(),
-            isWeekend:     $isWeekend,
-            extra:         $request->metadata,
+            isPremium: $isPremium,
+            isBanned: $isBanned,
+            builtAt: Carbon::now(),
+            isWeekend: $isWeekend,
+            extra: $request->metadata,
         );
     }
 

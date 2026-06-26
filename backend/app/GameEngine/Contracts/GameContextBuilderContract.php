@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Contracts;
 
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Exceptions\GameEngineException;
 
 /**
  * Contract for assembling a complete GameContext from persisted state.
@@ -17,7 +19,7 @@ interface GameContextBuilderContract
     /**
      * Build and return the current GameContext for the given user.
      *
-     * @throws \App\GameEngine\Exceptions\GameEngineException  If the user or required data cannot be loaded.
+     * @throws GameEngineException If the user or required data cannot be loaded.
      */
     public function build(int $userId): GameContext;
 }

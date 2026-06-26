@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -20,11 +21,11 @@ final class StockDailyHistory extends Model
     {
         return [
             'trading_date' => 'date',
-            'open_paise'   => 'integer',
-            'high_paise'   => 'integer',
-            'low_paise'    => 'integer',
-            'close_paise'  => 'integer',
-            'volume'       => 'integer',
+            'open_paise' => 'integer',
+            'high_paise' => 'integer',
+            'low_paise' => 'integer',
+            'close_paise' => 'integer',
+            'volume' => 'integer',
         ];
     }
 

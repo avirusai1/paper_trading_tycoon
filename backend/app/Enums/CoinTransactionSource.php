@@ -13,13 +13,13 @@ namespace App\Enums;
  */
 enum CoinTransactionSource: string
 {
-    case Challenge    = 'challenge';
-    case Achievement  = 'achievement';
-    case LevelUp      = 'level_up';
-    case Referral     = 'referral';
-    case DailyLogin   = 'daily_login';
+    case Challenge = 'challenge';
+    case Achievement = 'achievement';
+    case LevelUp = 'level_up';
+    case Referral = 'referral';
+    case DailyLogin = 'daily_login';
     case SeasonReward = 'season_reward';
-    case AdminGrant   = 'admin_grant';
+    case AdminGrant = 'admin_grant';
     case StorePurchase = 'store_purchase'; // Debit
-    case Refund       = 'refund';          // Compensating transaction
+    case Refund = 'refund';          // Compensating transaction
 }

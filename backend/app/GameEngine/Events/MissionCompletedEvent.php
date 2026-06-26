@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Events;
@@ -13,14 +14,25 @@ final readonly class MissionCompletedEvent implements GameEvent
 {
     public function __construct(
         private readonly int $userId,
-        public readonly int  $userMissionId,
-        public readonly int  $missionId,
+        public readonly int $userMissionId,
+        public readonly int $missionId,
         public readonly string $missionKey,
     ) {}
 
-    public function eventType(): GameEventType { return GameEventType::MissionCompleted; }
-    public function userId(): int              { return $this->userId; }
-    public function sourceId(): string         { return (string) $this->userMissionId; }
+    public function eventType(): GameEventType
+    {
+        return GameEventType::MissionCompleted;
+    }
+
+    public function userId(): int
+    {
+        return $this->userId;
+    }
+
+    public function sourceId(): string
+    {
+        return (string) $this->userMissionId;
+    }
 
     public function idempotencyKey(): string
     {

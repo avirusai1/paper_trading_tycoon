@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\GameEngine;
@@ -34,7 +35,7 @@ final class GameRuleServiceTest extends TestCase
     {
         parent::setUp();
         Cache::flush();
-        $this->service = new GameRuleService();
+        $this->service = new GameRuleService;
     }
 
     // ── getInt ────────────────────────────────────────────────────────────────
@@ -43,10 +44,10 @@ final class GameRuleServiceTest extends TestCase
     public function it_returns_integer_value_for_existing_key(): void
     {
         GameRule::factory()->create([
-            'key'        => 'xp.trade_buy',
-            'value'      => '10',
+            'key' => 'xp.trade_buy',
+            'value' => '10',
             'value_type' => 'integer',
-            'group'      => 'xp',
+            'group' => 'xp',
         ]);
 
         $result = $this->service->getInt('xp.trade_buy');
@@ -76,10 +77,10 @@ final class GameRuleServiceTest extends TestCase
     public function it_returns_float_value_for_existing_key(): void
     {
         GameRule::factory()->create([
-            'key'        => 'xp.premium_multiplier',
-            'value'      => '1.5',
+            'key' => 'xp.premium_multiplier',
+            'value' => '1.5',
             'value_type' => 'float',
-            'group'      => 'xp',
+            'group' => 'xp',
         ]);
 
         $result = $this->service->getFloat('xp.premium_multiplier');
@@ -101,10 +102,10 @@ final class GameRuleServiceTest extends TestCase
     public function it_returns_true_for_boolean_rule(): void
     {
         GameRule::factory()->create([
-            'key'        => 'features.xp_enabled',
-            'value'      => 'true',
+            'key' => 'features.xp_enabled',
+            'value' => 'true',
             'value_type' => 'boolean',
-            'group'      => 'features',
+            'group' => 'features',
         ]);
 
         $result = $this->service->getBool('features.xp_enabled');
@@ -116,10 +117,10 @@ final class GameRuleServiceTest extends TestCase
     public function it_returns_false_for_false_boolean_rule(): void
     {
         GameRule::factory()->create([
-            'key'        => 'features.coins_disabled',
-            'value'      => 'false',
+            'key' => 'features.coins_disabled',
+            'value' => 'false',
             'value_type' => 'boolean',
-            'group'      => 'features',
+            'group' => 'features',
         ]);
 
         $result = $this->service->getBool('features.coins_disabled');
@@ -137,7 +138,7 @@ final class GameRuleServiceTest extends TestCase
 
         $group = $this->service->getGroup('xp');
 
-        $this->assertArrayHasKey('trade_buy',  $group);
+        $this->assertArrayHasKey('trade_buy', $group);
         $this->assertArrayHasKey('trade_sell', $group);
         $this->assertSame(10, $group['trade_buy']);
     }
@@ -156,14 +157,14 @@ final class GameRuleServiceTest extends TestCase
     public function it_uses_cache_on_second_call(): void
     {
         GameRule::factory()->create([
-            'key'        => 'xp.daily_login',
-            'value'      => '25',
+            'key' => 'xp.daily_login',
+            'value' => '25',
             'value_type' => 'integer',
-            'group'      => 'xp',
+            'group' => 'xp',
         ]);
 
         // First call populates cache
-        $first  = $this->service->getInt('xp.daily_login');
+        $first = $this->service->getInt('xp.daily_login');
         // Delete the DB record to prove cache is used
         GameRule::where('key', 'xp.daily_login')->delete();
         // Second call should still return cached value

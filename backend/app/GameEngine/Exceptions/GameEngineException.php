@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Exceptions;
@@ -16,7 +17,7 @@ class GameEngineException extends DomainException
 {
     public function __construct(
         string $message,
-        private readonly string $code,
+        private readonly string $errorCode,
         ?\Throwable $previous = null,
     ) {
         parent::__construct($message, 0, $previous);
@@ -24,6 +25,6 @@ class GameEngineException extends DomainException
 
     public function errorCode(): string
     {
-        return $this->code;
+        return $this->errorCode;
     }
 }

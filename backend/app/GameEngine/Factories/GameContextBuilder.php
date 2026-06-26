@@ -1,17 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Factories;
 
-use App\GameEngine\Contracts\GameContextBuilderContract;
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\GameContextBuilderContract;
 use App\GameEngine\Enums\PlayerState;
 use App\GameEngine\Exceptions\GameEngineException;
 use App\Models\FeatureFlag;
 use App\Models\League;
 use App\Models\Season;
-use App\Models\StoreItem;
 use App\Models\User;
+use App\Models\UserAchievement;
 use App\Models\UserInventory;
 use App\Models\UserLeague;
 use App\Models\UserLevel;
@@ -49,7 +50,7 @@ final class GameContextBuilder implements GameContextBuilderContract
             );
         }
 
-        $wallet    = Wallet::where('user_id', $userId)->first();
+        $wallet = Wallet::where('user_id', $userId)->first();
         $userLevel = UserLevel::where('user_id', $userId)->first();
 
         if ($wallet === null || $userLevel === null) {
@@ -59,9 +60,9 @@ final class GameContextBuilder implements GameContextBuilderContract
             );
         }
 
-        $activeSeason  = Season::where('status', 'active')->latest('starts_at')->first();
-        $userLeague    = null;
-        $league        = null;
+        $activeSeason = Season::where('status', 'active')->latest('starts_at')->first();
+        $userLeague = null;
+        $league = null;
 
         if ($activeSeason !== null) {
             $userLeague = UserLeague::where('user_id', $userId)
@@ -78,35 +79,35 @@ final class GameContextBuilder implements GameContextBuilderContract
             ->where('status', 'assigned')
             ->where(function ($q) {
                 $q->whereNull('expires_at')
-                  ->orWhere('expires_at', '>', now());
+                    ->orWhere('expires_at', '>', now());
             })
             ->get()
             ->all();
 
-        $unlockedAchievementIds = \App\Models\UserAchievement::where('user_id', $userId)
+        $unlockedAchievementIds = UserAchievement::where('user_id', $userId)
             ->pluck('achievement_id')
             ->all();
 
         $activeMultipliers = $this->resolveMultipliers($userId, $user->is_premium);
-        $featureFlags      = $this->resolveFeatureFlags($user);
-        $loginStreak       = $user->profile?->login_streak_days ?? 0;
+        $featureFlags = $this->resolveFeatureFlags($user);
+        $loginStreak = $user->profile?->login_streak_days ?? 0;
 
         $playerState = $this->resolvePlayerState($user);
 
         return new GameContext(
-            user:                   $user,
-            playerState:            $playerState,
-            wallet:                 $wallet,
-            userLevel:              $userLevel,
-            currentLeague:          $userLeague,
-            league:                 $league,
-            activeSeason:           $activeSeason,
-            activeMissions:         $activeMissions,
+            user: $user,
+            playerState: $playerState,
+            wallet: $wallet,
+            userLevel: $userLevel,
+            currentLeague: $userLeague,
+            league: $league,
+            activeSeason: $activeSeason,
+            activeMissions: $activeMissions,
             unlockedAchievementIds: $unlockedAchievementIds,
-            loginStreakDays:        $loginStreak,
-            activeMultipliers:      $activeMultipliers,
-            featureFlags:           $featureFlags,
-            builtAt:                microtime(true),
+            loginStreakDays: $loginStreak,
+            activeMultipliers: $activeMultipliers,
+            featureFlags: $featureFlags,
+            builtAt: microtime(true),
         );
     }
 
@@ -115,10 +116,10 @@ final class GameContextBuilder implements GameContextBuilderContract
     private function resolvePlayerState(User $user): PlayerState
     {
         return match ($user->status) {
-            'active'    => $user->is_premium ? PlayerState::ActivePremium : PlayerState::Active,
+            'active' => $user->is_premium ? PlayerState::ActivePremium : PlayerState::Active,
             'suspended' => PlayerState::Suspended,
-            'banned'    => PlayerState::Banned,
-            default     => PlayerState::Active,
+            'banned' => PlayerState::Banned,
+            default => PlayerState::Active,
         };
     }
 
@@ -127,7 +128,7 @@ final class GameContextBuilder implements GameContextBuilderContract
      */
     private function resolveMultipliers(int $userId, bool $isPremium): array
     {
-        $xpMultiplier   = 1.0;
+        $xpMultiplier = 1.0;
         $coinMultiplier = 1.0;
 
         // Equipped store item effects
@@ -136,12 +137,12 @@ final class GameContextBuilder implements GameContextBuilderContract
             ->where('is_equipped', true)
             ->where(function ($q) {
                 $q->whereNull('expires_at')
-                  ->orWhere('expires_at', '>', now());
+                    ->orWhere('expires_at', '>', now());
             })
             ->get();
 
         foreach ($equippedItems as $inventory) {
-            $item   = $inventory->storeItem;
+            $item = $inventory->storeItem;
             $effect = $item->effect ?? [];
 
             if (isset($effect['xp_boost'])) {
@@ -154,7 +155,7 @@ final class GameContextBuilder implements GameContextBuilderContract
         }
 
         return [
-            'xp'    => $xpMultiplier,
+            'xp' => $xpMultiplier,
             'coins' => $coinMultiplier,
         ];
     }
@@ -165,7 +166,7 @@ final class GameContextBuilder implements GameContextBuilderContract
     private function resolveFeatureFlags(User $user): array
     {
         $flags = FeatureFlag::all();
-        $map   = [];
+        $map = [];
 
         foreach ($flags as $flag) {
             $map[$flag->key] = $flag->isEnabledForUser($user);

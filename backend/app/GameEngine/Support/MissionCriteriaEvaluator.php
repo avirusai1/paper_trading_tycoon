@@ -1,11 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Support;
 
-use App\GameEngine\Events\GameEvent;
-use App\GameEngine\Events\TradeExecutedEvent;
+use App\Enums\OrderSide;
 use App\GameEngine\Enums\MissionProgressType;
+use App\GameEngine\Events\DailyLoginEvent;
+use App\GameEngine\Events\GameEvent;
+use App\GameEngine\Events\ReferralCompletedEvent;
+use App\GameEngine\Events\TradeExecutedEvent;
 use App\Models\Mission;
 use App\Models\UserMission;
 
@@ -28,21 +32,21 @@ final class MissionCriteriaEvaluator
      */
     public function incrementFor(UserMission $userMission, GameEvent $event): int
     {
-        $mission  = $userMission->mission;
+        $mission = $userMission->mission;
         $criteria = $mission->criteria ?? [];
-        $trigger  = MissionProgressType::tryFrom($criteria['type'] ?? '');
+        $trigger = MissionProgressType::tryFrom($criteria['type'] ?? '');
 
         if ($trigger === null) {
             return 0;
         }
 
         return match ($trigger) {
-            MissionProgressType::Trade     => $this->evaluateTrade($event, $criteria),
-            MissionProgressType::BuyTrade  => $this->evaluateBuyTrade($event, $criteria),
+            MissionProgressType::Trade => $this->evaluateTrade($event, $criteria),
+            MissionProgressType::BuyTrade => $this->evaluateBuyTrade($event, $criteria),
             MissionProgressType::SellTrade => $this->evaluateSellTrade($event, $criteria),
-            MissionProgressType::Login     => $event instanceof \App\GameEngine\Events\DailyLoginEvent ? 1 : 0,
-            MissionProgressType::Referral  => $event instanceof \App\GameEngine\Events\ReferralCompletedEvent ? 1 : 0,
-            default                        => 0,
+            MissionProgressType::Login => $event instanceof DailyLoginEvent ? 1 : 0,
+            MissionProgressType::Referral => $event instanceof ReferralCompletedEvent ? 1 : 0,
+            default => 0,
         };
     }
 
@@ -52,6 +56,7 @@ final class MissionCriteriaEvaluator
             return 0;
         }
         $minValue = (int) ($criteria['min_value_paise'] ?? 0);
+
         return $event->totalValuePaise >= $minValue ? 1 : 0;
     }
 
@@ -60,10 +65,11 @@ final class MissionCriteriaEvaluator
         if (! $event instanceof TradeExecutedEvent) {
             return 0;
         }
-        if ($event->side !== \App\Enums\OrderSide::Buy) {
+        if ($event->side !== OrderSide::Buy) {
             return 0;
         }
         $minValue = (int) ($criteria['min_value_paise'] ?? 0);
+
         return $event->totalValuePaise >= $minValue ? 1 : 0;
     }
 
@@ -72,10 +78,11 @@ final class MissionCriteriaEvaluator
         if (! $event instanceof TradeExecutedEvent) {
             return 0;
         }
-        if ($event->side !== \App\Enums\OrderSide::Sell) {
+        if ($event->side !== OrderSide::Sell) {
             return 0;
         }
         $minValue = (int) ($criteria['min_value_paise'] ?? 0);
+
         return $event->totalValuePaise >= $minValue ? 1 : 0;
     }
 }

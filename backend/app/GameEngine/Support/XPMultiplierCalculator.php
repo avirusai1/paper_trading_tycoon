@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Support;
 
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\GameRuleProviderContract;
 
 /**
  * Calculates the effective XP multiplier for a user at a given point in time.
@@ -16,10 +18,10 @@ use App\GameEngine\Contexts\GameContext;
  *
  * The final multiplier is capped at the game rule 'xp.max_multiplier' (default 3.0).
  */
-final class XPMultiplierCalculator
+class XPMultiplierCalculator
 {
     public function __construct(
-        private readonly \App\GameEngine\Contracts\GameRuleProviderContract $rules,
+        private readonly GameRuleProviderContract $rules,
     ) {}
 
     /**
@@ -45,6 +47,7 @@ final class XPMultiplierCalculator
 
         // Cap
         $cap = $this->rules->getFloat('xp.max_multiplier', 3.0);
+
         return min($multiplier, $cap);
     }
 
@@ -52,9 +55,9 @@ final class XPMultiplierCalculator
     {
         return match (true) {
             $streakDays >= 30 => $this->rules->getFloat('xp.streak_multiplier_30', 1.3),
-            $streakDays >= 7  => $this->rules->getFloat('xp.streak_multiplier_7',  1.2),
-            $streakDays >= 3  => $this->rules->getFloat('xp.streak_multiplier_3',  1.1),
-            default           => 1.0,
+            $streakDays >= 7 => $this->rules->getFloat('xp.streak_multiplier_7', 1.2),
+            $streakDays >= 3 => $this->rules->getFloat('xp.streak_multiplier_3', 1.1),
+            default => 1.0,
         };
     }
 }

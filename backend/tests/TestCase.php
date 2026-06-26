@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Testing\TestResponse;
 
 /**
  * Paper Trading Tycoon — Base TestCase
@@ -20,7 +21,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Assert the response follows the success envelope.
      *
-     * @param  \Illuminate\Testing\TestResponse  $response
+     * @param  TestResponse  $response
      */
     protected function assertApiSuccess(mixed $response, int $status = 200): void
     {
@@ -32,7 +33,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Assert the response follows the error envelope.
      *
-     * @param  \Illuminate\Testing\TestResponse  $response
+     * @param  TestResponse  $response
      */
     protected function assertApiError(mixed $response, int $status): void
     {

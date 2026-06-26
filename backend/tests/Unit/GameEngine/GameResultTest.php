@@ -1,17 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\GameEngine;
 
+use App\Enums\AchievementTier;
 use App\GameEngine\DTOs\AchievementResult;
 use App\GameEngine\DTOs\GameResult;
 use App\GameEngine\DTOs\LevelResult;
 use App\GameEngine\DTOs\MissionResult;
 use App\GameEngine\DTOs\RewardResult;
 use App\GameEngine\DTOs\XPResult;
-use App\GameEngine\Enums\GameEventType;
 use App\GameEngine\Events\DailyLoginEvent;
-use App\Enums\AchievementTier;
 use Tests\TestCase;
 
 /**
@@ -56,7 +56,7 @@ final class GameResultTest extends TestCase
     public function did_level_up_is_true_when_level_result_has_gain(): void
     {
         $levelResult = $this->makeLevelResult(levelBefore: 3, levelAfter: 4);
-        $result      = $this->makeResult(levelResults: [$levelResult]);
+        $result = $this->makeResult(levelResults: [$levelResult]);
 
         $this->assertTrue($result->didLevelUp());
     }
@@ -111,27 +111,27 @@ final class GameResultTest extends TestCase
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private function makeResult(
-        array $xpAmounts       = [],
-        array $coinAmounts     = [],
-        array $levelResults    = [],
-        array $missionResults  = [],
+        array $xpAmounts = [],
+        array $coinAmounts = [],
+        array $levelResults = [],
+        array $missionResults = [],
         array $achievementResults = [],
     ): GameResult {
         $xpResults = array_map(fn ($amt) => new XPResult(1, $amt, 0, $amt, 1, 1, false, 'daily_login', 'src', false), $xpAmounts);
         $rewardResults = array_map(fn ($amt) => new RewardResult(1, $amt, 0, $amt, 'level_up', 'src'), $coinAmounts);
 
         return new GameResult(
-            triggerEvent:       $this->event,
-            userId:             1,
-            xpResults:          $xpResults,
-            levelResults:       $levelResults,
-            careerResults:      [],
-            missionResults:     $missionResults,
+            triggerEvent: $this->event,
+            userId: 1,
+            xpResults: $xpResults,
+            levelResults: $levelResults,
+            careerResults: [],
+            missionResults: $missionResults,
             achievementResults: $achievementResults,
-            leagueResults:      [],
-            seasonResults:      [],
-            rewardResults:      $rewardResults,
-            processingTimeMs:   1.5,
+            leagueResults: [],
+            seasonResults: [],
+            rewardResults: $rewardResults,
+            processingTimeMs: 1.5,
         );
     }
 

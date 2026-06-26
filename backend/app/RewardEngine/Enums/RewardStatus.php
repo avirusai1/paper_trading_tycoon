@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Enums;
@@ -14,14 +15,14 @@ namespace App\RewardEngine\Enums;
  */
 enum RewardStatus: string
 {
-    case Pending      = 'pending';
-    case Validated    = 'validated';
-    case Calculated   = 'calculated';
-    case Distributed  = 'distributed';
-    case Recorded     = 'recorded';
-    case Failed       = 'failed';
-    case Skipped      = 'skipped';      // Duplicate detection
-    case RolledBack   = 'rolled_back';
+    case Pending = 'pending';
+    case Validated = 'validated';
+    case Calculated = 'calculated';
+    case Distributed = 'distributed';
+    case Recorded = 'recorded';
+    case Failed = 'failed';
+    case Skipped = 'skipped';      // Duplicate detection
+    case RolledBack = 'rolled_back';
 
     public function isTerminal(): bool
     {
@@ -30,7 +31,7 @@ enum RewardStatus: string
             self::Failed,
             self::Skipped,
             self::RolledBack => true,
-            default           => false,
+            default => false,
         };
     }
 

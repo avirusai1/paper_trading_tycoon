@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Processors;
@@ -7,8 +8,8 @@ use App\Enums\CoinTransactionSource;
 use App\GameEngine\Actions\GrantAchievementProgressAction;
 use App\GameEngine\Actions\GrantCoinsAction;
 use App\GameEngine\Actions\GrantXPAction;
-use App\GameEngine\Contracts\AchievementProcessorContract;
 use App\GameEngine\Contexts\GameContext;
+use App\GameEngine\Contracts\AchievementProcessorContract;
 use App\GameEngine\DTOs\AchievementResult;
 use App\GameEngine\Enums\XPSource;
 use App\GameEngine\Events\GameEvent;
@@ -23,8 +24,8 @@ final class AchievementProcessor implements AchievementProcessorContract
 {
     public function __construct(
         private readonly GrantAchievementProgressAction $achievementAction,
-        private readonly GrantXPAction                  $grantXP,
-        private readonly GrantCoinsAction               $grantCoins,
+        private readonly GrantXPAction $grantXP,
+        private readonly GrantCoinsAction $grantCoins,
     ) {}
 
     /**
@@ -33,7 +34,7 @@ final class AchievementProcessor implements AchievementProcessorContract
     public function evaluate(GameContext $context, GameEvent $event): array
     {
         $unlocked = $this->achievementAction->execute($context, $event);
-        $results  = [];
+        $results = [];
 
         foreach ($unlocked as $result) {
             if (! $result->justUnlocked) {

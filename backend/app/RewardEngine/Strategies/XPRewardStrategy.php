@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Strategies;
@@ -13,7 +14,6 @@ use App\RewardEngine\DTOs\RewardRequest;
 use App\RewardEngine\DTOs\StrategyResult;
 use App\RewardEngine\Enums\RewardStatus;
 use App\RewardEngine\Enums\RewardType;
-use App\RewardEngine\Exceptions\RewardRollbackException;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Log;
 final class XPRewardStrategy implements RewardStrategyContract
 {
     public function __construct(
-        private readonly XPCalculator        $calculator,
+        private readonly XPCalculator $calculator,
         private readonly XPProcessorContract $xpProcessor,
     ) {}
 
@@ -45,11 +45,11 @@ final class XPRewardStrategy implements RewardStrategyContract
     {
         if ($reward->isDryRun || $reward->finalXP === 0) {
             return new StrategyResult(
-                rewardType:     $this->handles(),
-                status:         $reward->isDryRun ? RewardStatus::Validated : RewardStatus::Skipped,
+                rewardType: $this->handles(),
+                status: $reward->isDryRun ? RewardStatus::Validated : RewardStatus::Skipped,
                 idempotencyKey: $reward->idempotencyKey,
-                userId:         $reward->userId,
-                xpGranted:      $reward->finalXP,
+                userId: $reward->userId,
+                xpGranted: $reward->finalXP,
             );
         }
 
@@ -58,31 +58,31 @@ final class XPRewardStrategy implements RewardStrategyContract
         $xpSource = $this->resolveXPSource($reward);
 
         $xpResult = $this->xpProcessor->grant(
-            context:        $context->user->gameContext ?? null,
-            source:         $xpSource,
-            sourceId:       $reward->idempotencyKey,
+            context: $context->user->gameContext ?? null,
+            source: $xpSource,
+            sourceId: $reward->idempotencyKey,
             overrideAmount: $reward->finalXP,
         );
 
         Log::info('[RewardEngine:XPStrategy] XP distributed', [
-            'user_id'     => $reward->userId,
-            'xp_granted'  => $xpResult->amountGranted,
+            'user_id' => $reward->userId,
+            'xp_granted' => $xpResult->amountGranted,
             'level_after' => $xpResult->levelAfter,
-            'level_up'    => $xpResult->didLevelUp,
-            'key'         => $reward->idempotencyKey,
+            'level_up' => $xpResult->didLevelUp,
+            'key' => $reward->idempotencyKey,
         ]);
 
         return new StrategyResult(
-            rewardType:     $this->handles(),
-            status:         RewardStatus::Distributed,
+            rewardType: $this->handles(),
+            status: RewardStatus::Distributed,
             idempotencyKey: $reward->idempotencyKey,
-            userId:         $reward->userId,
-            xpGranted:      $xpResult->amountGranted,
-            extras:         [
-                'xp_before'    => $xpResult->xpBefore,
-                'xp_after'     => $xpResult->xpAfter,
+            userId: $reward->userId,
+            xpGranted: $xpResult->amountGranted,
+            extras: [
+                'xp_before' => $xpResult->xpBefore,
+                'xp_after' => $xpResult->xpAfter,
                 'level_before' => $xpResult->levelBefore,
-                'level_after'  => $xpResult->levelAfter,
+                'level_after' => $xpResult->levelAfter,
                 'did_level_up' => $xpResult->didLevelUp,
             ],
         );
@@ -94,7 +94,7 @@ final class XPRewardStrategy implements RewardStrategyContract
         // XP is append-only by policy — we log the intent and return RolledBack.
         // TODO: Implement compensating XP debit via XPProcessorContract when supported.
         Log::warning('[RewardEngine:XPStrategy] XP rollback requested — append-only, no debit applied', [
-            'user_id'         => $context->userId(),
+            'user_id' => $context->userId(),
             'idempotency_key' => $idempotencyKey,
         ]);
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Factories;
@@ -14,12 +15,13 @@ final class WalletFactory extends Factory
     public function definition(): array
     {
         $spent = $this->faker->numberBetween(0, 90_000_000);
+
         return [
-            'user_id'                 => User::factory(),
-            'virtual_cash_paise'      => 100_000_000 - $spent,
-            'coin_balance'            => $this->faker->numberBetween(0, 5000),
-            'total_deposited_paise'   => 100_000_000,
-            'total_withdrawn_paise'   => $spent,
+            'user_id' => User::factory(),
+            'virtual_cash_paise' => 100_000_000 - $spent,
+            'coin_balance' => $this->faker->numberBetween(0, 5000),
+            'total_deposited_paise' => 100_000_000,
+            'total_withdrawn_paise' => $spent,
             'coin_balance_updated_at' => now(),
         ];
     }
@@ -27,8 +29,8 @@ final class WalletFactory extends Factory
     public function fresh(): static
     {
         return $this->state([
-            'virtual_cash_paise'    => 100_000_000,
-            'coin_balance'          => 0,
+            'virtual_cash_paise' => 100_000_000,
+            'coin_balance' => 0,
             'total_withdrawn_paise' => 0,
         ]);
     }

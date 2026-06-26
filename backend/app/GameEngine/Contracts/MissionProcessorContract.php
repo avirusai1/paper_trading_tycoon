@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Contracts;
@@ -6,6 +7,7 @@ namespace App\GameEngine\Contracts;
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\MissionResult;
 use App\GameEngine\Enums\MissionProgressType;
+use App\GameEngine\Exceptions\MissionException;
 
 /**
  * Contract for the Mission (Challenge) processing subsystem.
@@ -24,7 +26,8 @@ interface MissionProcessorContract
      * Advance mission progress for all active missions matching the trigger.
      *
      * @return MissionResult[]
-     * @throws \App\GameEngine\Exceptions\MissionException
+     *
+     * @throws MissionException
      */
     public function advance(
         GameContext $context,
@@ -35,7 +38,7 @@ interface MissionProcessorContract
     /**
      * Claim the reward for a completed, unclaimed mission.
      *
-     * @throws \App\GameEngine\Exceptions\MissionException  If mission not found, not completed, or already claimed.
+     * @throws MissionException If mission not found, not completed, or already claimed.
      */
     public function claimReward(GameContext $context, int $userMissionId): MissionResult;
 }

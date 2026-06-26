@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Contracts;
@@ -6,6 +7,7 @@ namespace App\RewardEngine\Contracts;
 use App\RewardEngine\Contexts\RewardContext;
 use App\RewardEngine\DTOs\CalculatedReward;
 use App\RewardEngine\DTOs\RewardRequest;
+use App\RewardEngine\Exceptions\RewardCalculationException;
 
 /**
  * Contract for the reward amount calculator.
@@ -18,7 +20,7 @@ use App\RewardEngine\DTOs\RewardRequest;
 interface RewardCalculatorContract
 {
     /**
-     * @throws \App\RewardEngine\Exceptions\RewardCalculationException
+     * @throws RewardCalculationException
      */
     public function calculate(RewardRequest $request, RewardContext $context): CalculatedReward;
 }

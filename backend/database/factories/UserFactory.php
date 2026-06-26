@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Database\Factories;
@@ -32,18 +33,18 @@ final class UserFactory extends Factory
     public function definition(): array
     {
         $firstName = $this->faker->randomElement(self::FIRST_NAMES);
-        $lastName  = $this->faker->randomElement(self::LAST_NAMES);
+        $lastName = $this->faker->randomElement(self::LAST_NAMES);
 
         return [
-            'name'              => "{$firstName} {$lastName}",
-            'email'             => strtolower("{$firstName}.{$lastName}" . $this->faker->randomNumber(3)) . '@example.com',
-            'phone'             => '+91' . $this->faker->numerify('9#########'),
+            'name' => "{$firstName} {$lastName}",
+            'email' => strtolower("{$firstName}.{$lastName}".$this->faker->randomNumber(3)).'@example.com',
+            'phone' => '+91'.$this->faker->numerify('9#########'),
             'email_verified_at' => now(),
-            'password'          => bcrypt('Password@123'),
-            'referral_code'     => strtoupper(Str::random(8)),
-            'referred_by'       => null,
-            'status'            => 'active',
-            'is_premium'        => false,
+            'password' => bcrypt('Password@123'),
+            'referral_code' => strtoupper(Str::random(8)),
+            'referred_by' => null,
+            'status' => 'active',
+            'is_premium' => false,
         ];
     }
 

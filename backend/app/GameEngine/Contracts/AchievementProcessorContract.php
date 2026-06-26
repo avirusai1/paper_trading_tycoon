@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\GameEngine\Contracts;
@@ -6,6 +7,7 @@ namespace App\GameEngine\Contracts;
 use App\GameEngine\Contexts\GameContext;
 use App\GameEngine\DTOs\AchievementResult;
 use App\GameEngine\Events\GameEvent;
+use App\GameEngine\Exceptions\AchievementException;
 
 /**
  * Contract for the Achievement processing subsystem.
@@ -21,7 +23,8 @@ interface AchievementProcessorContract
      * Unlocks any newly satisfied achievements and grants their rewards.
      *
      * @return AchievementResult[]
-     * @throws \App\GameEngine\Exceptions\AchievementException
+     *
+     * @throws AchievementException
      */
     public function evaluate(GameContext $context, GameEvent $event): array;
 }

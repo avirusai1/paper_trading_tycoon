@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\RewardEngine\Enums;
@@ -11,15 +12,15 @@ namespace App\RewardEngine\Enums;
  */
 enum MultiplierType: string
 {
-    case XP           = 'xp';
-    case Coins        = 'coins';
-    case PremiumXP    = 'premium_xp';
+    case XP = 'xp';
+    case Coins = 'coins';
+    case PremiumXP = 'premium_xp';
     case PremiumCoins = 'premium_coins';
-    case WeekendXP    = 'weekend_xp';
+    case WeekendXP = 'weekend_xp';
     case WeekendCoins = 'weekend_coins';
-    case SeasonBonus  = 'season_bonus';
+    case SeasonBonus = 'season_bonus';
     case ReferralBonus = 'referral_bonus';
-    case StreakBonus   = 'streak_bonus';
+    case StreakBonus = 'streak_bonus';
 
     /**
      * Rules Engine key to look up the multiplier value.
@@ -27,6 +28,6 @@ enum MultiplierType: string
      */
     public function ruleKey(): string
     {
-        return 'rewards.multiplier.' . $this->value;
+        return 'rewards.multiplier.'.$this->value;
     }
 }
